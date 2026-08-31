@@ -1,2 +1,0 @@
-# ecolnk
-Firmar documentos digitalmente
