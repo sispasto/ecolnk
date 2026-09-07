@@ -1,330 +1,221 @@
-/* global Chart, coreui */
+const templateCache = {};
+var arrayGlobal = []; //array de promotores
+var folderPathIMG = ""; //variable que guarda id de carpeta donde se guardan las imagenes
+var versionApp = localStorage.getItem("app_version") || ""; //La version se debe cambiar en service-worker.js y main.js
+let swRegistration = null; // 🔥 referencia global
+let intervalSW = null;
+let newVersionAvailable = null;
 
-/**
- * --------------------------------------------------------------------------
- * CoreUI Boostrap Admin Template main.js
- * Licensed under MIT (https://github.com/coreui/coreui-free-bootstrap-admin-template/blob/main/LICENSE)
- * --------------------------------------------------------------------------
- */
+/*******************************************************************************/
 
-/**
- * Dashboard Charts
- *
- * This module initializes and manages all charts on the main Dashboard page (index.html).
- * It includes:
- * - Card charts (small charts in statistic cards)
- * - Main chart (large chart showing traffic/metrics over time)
- * - Custom tooltip configuration using CoreUI's ChartJS utilities
- * - Theme-aware chart updates (responds to dark/light mode changes)
- *
- * All charts use Chart.js with CoreUI's custom styling and color variables.
- */
-
-// Configure Chart.js defaults for custom tooltips
-Chart.defaults.pointHitDetectionRadius = 1;
-Chart.defaults.plugins.tooltip.enabled = false;
-Chart.defaults.plugins.tooltip.mode = 'index';
-Chart.defaults.plugins.tooltip.position = 'nearest';
-Chart.defaults.plugins.tooltip.external = coreui.ChartJS.customTooltips;
-Chart.defaults.defaultFontColor = coreui.Utils.getStyle('--cui-body-color');
-document.documentElement.addEventListener('ColorSchemeChange', () => {
-  cardChart1.data.datasets[0].pointBackgroundColor = coreui.Utils.getStyle('--cui-primary');
-  cardChart2.data.datasets[0].pointBackgroundColor = coreui.Utils.getStyle('--cui-info');
-  mainChart.options.scales.x.grid.color = coreui.Utils.getStyle('--cui-border-color-translucent');
-  mainChart.options.scales.x.ticks.color = coreui.Utils.getStyle('--cui-body-color');
-  mainChart.options.scales.y.border.color = coreui.Utils.getStyle('--cui-border-color-translucent');
-  mainChart.options.scales.y.grid.color = coreui.Utils.getStyle('--cui-border-color-translucent');
-  mainChart.options.scales.y.ticks.color = coreui.Utils.getStyle('--cui-body-color');
-  cardChart1.update();
-  cardChart2.update();
-  mainChart.update();
-});
-
-/**
- * Generates a random integer between min and max (inclusive)
- * @param {number} min - Minimum value
- * @param {number} max - Maximum value
- * @returns {number} Random integer between min and max
- */
-const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
-const cardChart1 = new Chart(document.getElementById('card-chart1'), {
-  type: 'line',
-  data: {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [{
-      label: 'My First dataset',
-      backgroundColor: 'transparent',
-      borderColor: 'rgba(255,255,255,.55)',
-      pointBackgroundColor: coreui.Utils.getStyle('--cui-primary'),
-      data: [65, 59, 84, 84, 51, 55, 40]
-    }]
-  },
-  options: {
-    plugins: {
-      legend: {
-        display: false
-      }
-    },
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        border: {
-          display: false
-        },
-        grid: {
-          display: false,
-          drawBorder: false
-        },
-        ticks: {
-          display: false
-        }
-      },
-      y: {
-        min: 30,
-        max: 89,
-        display: false,
-        grid: {
-          display: false
-        },
-        ticks: {
-          display: false
-        }
-      }
-    },
-    elements: {
-      line: {
-        borderWidth: 1,
-        tension: 0.4
-      },
-      point: {
-        radius: 4,
-        hitRadius: 10,
-        hoverRadius: 4
-      }
-    }
+function getHome() {
+  let main = document.getElementById("App");
+  removeALLChilds(main);
+  // 🔥 SIEMPRE leer la versión más reciente
+  versionApp = localStorage.getItem("app_version") || "";
+  const componente = document.createElement("login-component");
+  componente.setAttribute("container", "#App");
+  componente.versionApp = versionApp;
+  main.appendChild(componente);
+}
+/***************************************************************************************/
+function crearLoader() {
+  eliminarLoader();
+  let containerloader = document.createElement("div");
+  containerloader.id = "containerloader";
+  let loader = document.createElement("div");
+  loader.id = "loader";
+  for (let i = 0; i < 4; i++) {
+    loader.appendChild(document.createElement("div"));
   }
-});
-const cardChart2 = new Chart(document.getElementById('card-chart2'), {
-  type: 'line',
-  data: {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [{
-      label: 'My First dataset',
-      backgroundColor: 'transparent',
-      borderColor: 'rgba(255,255,255,.55)',
-      pointBackgroundColor: coreui.Utils.getStyle('--cui-info'),
-      data: [1, 18, 9, 17, 34, 22, 11]
-    }]
-  },
-  options: {
-    plugins: {
-      legend: {
-        display: false
-      }
-    },
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        border: {
-          display: false
-        },
-        grid: {
-          display: false,
-          drawBorder: false
-        },
-        ticks: {
-          display: false
-        }
-      },
-      y: {
-        min: -9,
-        max: 39,
-        display: false,
-        grid: {
-          display: false
-        },
-        ticks: {
-          display: false
-        }
-      }
-    },
-    elements: {
-      line: {
-        borderWidth: 1
-      },
-      point: {
-        radius: 4,
-        hitRadius: 10,
-        hoverRadius: 4
-      }
-    }
-  }
-});
+  loader.classList.add("lds-roller");
+  containerloader.appendChild(loader);
+  document.body.appendChild(containerloader);
+}
 
-// eslint-disable-next-line no-unused-vars
-const cardChart3 = new Chart(document.getElementById('card-chart3'), {
-  type: 'line',
-  data: {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [{
-      label: 'My First dataset',
-      backgroundColor: 'rgba(255,255,255,.2)',
-      borderColor: 'rgba(255,255,255,.55)',
-      data: [78, 81, 80, 45, 34, 12, 40],
-      fill: true
-    }]
-  },
-  options: {
-    plugins: {
-      legend: {
-        display: false
-      }
-    },
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        display: false
-      },
-      y: {
-        display: false
-      }
-    },
-    elements: {
-      line: {
-        borderWidth: 2,
-        tension: 0.4
-      },
-      point: {
-        radius: 0,
-        hitRadius: 10,
-        hoverRadius: 4
-      }
-    }
-  }
-});
+function eliminarLoader() {
+  let loader = document.getElementById("containerloader");
+  if (loader) loader.remove();
+}
 
-// eslint-disable-next-line no-unused-vars
-const cardChart4 = new Chart(document.getElementById('card-chart4'), {
-  type: 'bar',
-  data: {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March', 'April'],
-    datasets: [{
-      label: 'My First dataset',
-      backgroundColor: 'rgba(255,255,255,.2)',
-      borderColor: 'rgba(255,255,255,.55)',
-      data: [78, 81, 80, 45, 34, 12, 40, 85, 65, 23, 12, 98, 34, 84, 67, 82],
-      barPercentage: 0.6
-    }]
-  },
-  options: {
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false
-      }
-    },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-          drawTicks: false
-        },
-        ticks: {
-          display: false
-        }
-      },
-      y: {
-        border: {
-          display: false
-        },
-        grid: {
-          display: false,
-          drawBorder: false,
-          drawTicks: false
-        },
-        ticks: {
-          display: false
-        }
-      }
-    }
+function cerrarModalesActivos() {
+  const allModals = document.querySelectorAll(".modal.show");
+  allModals.forEach((modal) => {
+    const instance = bootstrap.Modal.getInstance(modal);
+    if (instance) instance.hide();
+  });
+}
+
+function removeALLChilds(parentNode) {
+  while (parentNode.firstChild) {
+    parentNode.removeChild(parentNode.firstChild);
   }
-});
-const mainChart = new Chart(document.getElementById('main-chart'), {
-  type: 'line',
-  data: {
-    labels: ['October', 'November', 'December', 'January', 'February', 'March', 'April'],
-    datasets: [{
-      label: 'My First dataset',
-      backgroundColor: `rgba(${coreui.Utils.getStyle('--cui-info-rgb')}, .1)`,
-      borderColor: coreui.Utils.getStyle('--cui-info'),
-      pointHoverBackgroundColor: '#fff',
-      borderWidth: 2,
-      data: [random(50, 200), random(50, 200), random(50, 200), random(50, 200), random(50, 200), random(50, 200), random(50, 200)],
-      fill: true
-    }, {
-      label: 'My Second dataset',
-      borderColor: coreui.Utils.getStyle('--cui-success'),
-      pointHoverBackgroundColor: '#fff',
-      borderWidth: 2,
-      data: [random(50, 200), random(50, 200), random(50, 200), random(50, 200), random(50, 200), random(50, 200), random(50, 200)]
-    }]
-  },
-  options: {
-    maintainAspectRatio: false,
-    plugins: {
-      annotation: {
-        annotations: {
-          line1: {
-            type: 'line',
-            yMin: 95,
-            yMax: 95,
-            borderColor: coreui.Utils.getStyle('--cui-danger'),
-            borderWidth: 1,
-            borderDash: [8, 5]
+}
+
+function alertSMS(texto) {
+  const myToast = document.getElementById("liveToast");
+  const smsToast = myToast.querySelector(".toast-body");
+
+  // 1. Insertar el texto
+  smsToast.innerHTML = texto;
+
+  // 2. Forzar que el contenedor padre esté por encima de todo (z-index)
+  // Buscamos el div que tiene las clases 'position-fixed bottom-0 end-0'
+  const container = myToast.closest(".position-fixed");
+  if (container) {
+    container.style.zIndex = "1090";
+  }
+
+  const toast = new bootstrap.Toast(myToast);
+  toast.show();
+}
+
+/* =========================
+   AUTO UPDATE SW
+========================= */
+function iniciarAutoUpdateSW() {
+  if (intervalSW) return;
+
+  intervalSW = setInterval(() => {
+    if (swRegistration) {
+      console.log("🔄 Buscando actualización del SW...");
+      swRegistration.update();
+    }
+  }, 300000); // detecta versiones cada 30 minutos (1800000 ms) 30segundos 300000
+}
+
+/* =========================
+   BOTÓN ACTUALIZACIÓN
+========================= */
+function mostrarBotonActualizacion() {
+  let btn = document.getElementById("btn-update-app");
+
+  if (!btn) {
+    btn = document.createElement("button");
+    btn.id = "btn-update-app";
+
+    btn.style.position = "fixed";
+    btn.style.bottom = "20px";
+    btn.style.right = "20px";
+    btn.style.zIndex = "9999";
+    btn.style.padding = "10px 15px";
+    btn.style.background = "#0d6efd";
+    btn.style.color = "#fff";
+    btn.style.border = "none";
+    btn.style.borderRadius = "8px";
+
+    document.body.appendChild(btn);
+  }
+
+  btn.innerText = newVersionAvailable
+    ? `Actualizar a versión ${newVersionAvailable}`
+    : "Nueva versión disponible";
+
+  btn.onclick = () => {
+    if (swRegistration && swRegistration.waiting) {
+      // 🔥 AQUÍ recién aceptas la nueva versión
+      if (newVersionAvailable) {
+        localStorage.setItem("app_version", newVersionAvailable);
+      }
+
+      swRegistration.waiting.postMessage({ action: "SKIP_WAITING" });
+    }
+  };
+}
+
+/* =========================
+   INIT
+========================= */
+document.addEventListener("DOMContentLoaded", async function () {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+      .register("./service-worker.js", {
+        // Al usar "./" buscamos en la carpeta actual, sin importar el dominio
+        scope: "./",
+        updateViaCache: "none",
+      })
+      .then((reg) => {
+        swRegistration = reg;
+
+        // 🔥 iniciar revisión automática
+        iniciarAutoUpdateSW();
+
+        // 🔥 SIEMPRE obtener versión (incluye primera carga)
+        // En lugar de llamar a ready inmediatamente, espera a que el SW esté activo
+        navigator.serviceWorker.ready.then((regReady) => {
+          // Solo enviamos el mensaje si realmente hay un SW controlando la página
+          if (regReady.active && navigator.serviceWorker.controller) {
+            regReady.active.postMessage("GET_VERSION");
+          }
+        });
+
+        // 🔥 si ya hay una versión en espera
+        if (reg.waiting && navigator.serviceWorker.controller) {
+          console.log("SW ya estaba esperando");
+          mostrarBotonActualizacion();
+        }
+
+        // 🔥 detectar nueva versión
+        reg.onupdatefound = () => {
+          const newSW = reg.installing;
+          if (!newSW) return;
+
+          newSW.onstatechange = () => {
+            if (newSW.state === "installed") {
+              // Solo si ya hay una app corriendo (no primera instalación)
+              if (navigator.serviceWorker.controller) {
+                console.log("Nueva versión disponible");
+
+                // 🔥 pedir versión del NUEVO SW
+                newSW.postMessage("GET_VERSION");
+
+                if (reg.waiting) {
+                  mostrarBotonActualizacion();
+                }
+              }
+            }
+          };
+        };
+      })
+      .catch((error) => console.error("Error al registrar el SW:", error));
+
+    // 🔥 recibir versión
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      if (event.data.type === "VERSION") {
+        if (swRegistration && swRegistration.waiting) {
+          // 🔥 nueva versión (NO aplicar aún)
+          newVersionAvailable = event.data.version;
+          console.log("Nueva versión detectada:", newVersionAvailable);
+          mostrarBotonActualizacion();
+        } else {
+          // 🔥 versión actual activa
+          versionApp = event.data.version;
+          localStorage.setItem("app_version", versionApp);
+
+          // 🔥 actualizar UI si estás en home
+          const label = document.getElementById("version-label");
+          if (label) {
+            label.textContent = `Tally v${versionApp}`;
           }
         }
-      },
-      legend: {
-        display: false
       }
-    },
-    scales: {
-      x: {
-        grid: {
-          color: coreui.Utils.getStyle('--cui-border-color-translucent'),
-          drawOnChartArea: false
-        },
-        ticks: {
-          color: coreui.Utils.getStyle('--cui-body-color')
-        }
-      },
-      y: {
-        border: {
-          color: coreui.Utils.getStyle('--cui-border-color-translucent')
-        },
-        grid: {
-          color: coreui.Utils.getStyle('--cui-border-color-translucent')
-        },
-        ticks: {
-          beginAtZero: true,
-          color: coreui.Utils.getStyle('--cui-body-color'),
-          max: 250,
-          maxTicksLimit: 5,
-          stepSize: Math.ceil(250 / 5)
+    });
+
+    // 🔥 recargar SOLO cuando usuario acepta actualización
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      window.location.reload();
+    });
+
+    // 🔥 revisar actualización al volver a la pestaña
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        if (swRegistration) {
+          console.log("Validando actualizaciones...");
+          swRegistration.update();
         }
       }
-    },
-    elements: {
-      line: {
-        tension: 0.4
-      },
-      point: {
-        radius: 0,
-        hitRadius: 10,
-        hoverRadius: 4,
-        hoverBorderWidth: 3
-      }
-    }
+    });
   }
+
+  getHome();
 });
-//# sourceMappingURL=main.js.map
