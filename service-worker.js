@@ -1,17 +1,17 @@
-const APP_VERSION = "1.0"; // Subimos versión por el cambio estructural
-const CACHE_NAME = `ecolnk-app-cache-v${APP_VERSION}`;
-
-// --- LÓGICA DE NOTIFICACIONES SIMPLIFICADA ---
+const APP_VERSION = "2.1";
+const CACHE_NAME = `app-tally-v${APP_VERSION}`;
 
 self.addEventListener("install", (e) => {
+  // ⚠️ NO usar skipWaiting (modo controlado)
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll([
-        "./", // 🔄 Corregido: ruta raíz relativa
-        "./index.html", // 🔄 Corregido: ruta raíz relativa
-        "./css/home.css", // 🔄 Corregido: ruta raíz relativa
-        "./js/main.js", // 🔄 Corregido: ruta raíz relativa
-        "./componentes/index.js", // 🔄 Corregido: ruta raíz relativa
+        "./",
+        "./index.html",
+        "./css/home.css",
+        "./css/loader.css",
+        "./js/main.js",
+        "./componentes/index.js",
       ]);
     }),
   );
@@ -19,74 +19,36 @@ self.addEventListener("install", (e) => {
 
 self.addEventListener("activate", (e) => {
   console.log("SW activado - versión", APP_VERSION);
+
   e.waitUntil(
     caches.keys().then((names) => {
       return Promise.all(
         names
           .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name)),
+          .map((name) => {
+            return caches.delete(name);
+          }),
       );
     }),
   );
+
   self.clients.claim();
-});
-
-// ESCUCHA DE PUSH (Ya no valida admin, confía en el servidor)
-self.addEventListener("push", (event) => {
-  event.waitUntil(procesarNotificacionPush(event));
-});
-
-async function procesarNotificacionPush(event) {
-  let data = { title: "SISTEMA", body: "Novedad" };
-  try {
-    data = event.data ? event.data.json() : data;
-  } catch (e) {
-    console.error(e);
-  }
-
-  const options = {
-    body: data.body,
-    icon: "./assets/icon_push-192x192.png", // 🔄 Corregido a ruta relativa
-    badge: "./assets/badge.png", // 🔄 Corregido a ruta relativa
-    tag: "reporte-asistencia",
-    renotify: true,
-    data: {
-      url: data.url || "./index.html", // 🔄 Corregido a ruta relativa
-    },
-  };
-
-  return self.registration.showNotification(data.title, options);
-}
-
-// CLICK EN NOTIFICACIÓN - Versión Corregida para Dominio Raíz
-self.addEventListener("notificationclick", (event) => {
-  event.notification.close();
-
-  // Obtenemos la URL de destino o por defecto la raíz de la app
-  const urlDestino = event.notification.data?.url || "./index.html"; // 🔄 Corregido
-
-  event.waitUntil(
-    clients
-      .matchAll({ type: "window", includeUncontrolled: true })
-      .then((clientList) => {
-        // Si la app ya está abierta en alguna pestaña
-        for (const client of clientList) {
-          // 🔄 Corregido: Ya no buscamos "/checkin/", sino que valide la URL actual
-          if (client.url.includes(location.origin) && "navigate" in client) {
-            client.navigate(urlDestino);
-            return client.focus();
-          }
-        }
-        // Si la app no estaba abierta, la abre desde cero
-        if (clients.openWindow) {
-          return clients.openWindow(urlDestino);
-        }
-      }),
-  );
 });
 
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
+
+  const url = new URL(e.request.url);
+
+  // 🛡️ REGLA DE EXCLUSIÓN PARA SUPABASE (Network-Only)
+  // Si la petición va al dominio de Supabase o a sus funciones, no pasa por la caché.
+  if (
+    url.hostname.includes("supabase.co") ||
+    url.pathname.includes("/functions/v1/")
+  ) {
+    return; // El SW se hace a un lado y deja que el navegador consulte directamente a internet.
+  }
+
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
       const fetchPromise = fetch(e.request)
@@ -98,22 +60,32 @@ self.addEventListener("fetch", (e) => {
           ) {
             return networkRes;
           }
+
           const responseClone = networkRes.clone();
+
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(e.request, responseClone);
           });
+
           return networkRes;
         })
         .catch(() => cachedResponse);
+
       return cachedResponse || fetchPromise;
     }),
   );
 });
 
 self.addEventListener("message", (event) => {
+  // 🔥 devolver versión
   if (event.data === "GET_VERSION") {
-    event.source.postMessage({ type: "VERSION", version: APP_VERSION });
+    event.source.postMessage({
+      type: "VERSION",
+      version: APP_VERSION,
+    });
   }
+
+  // 🔥 activar manualmente cuando el usuario haga clic
   if (event.data?.action === "SKIP_WAITING") {
     self.skipWaiting();
   }

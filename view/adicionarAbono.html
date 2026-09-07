@@ -1,0 +1,708 @@
+<style>
+  /* --- ESPACIO GLOBAL Y AISLAMIENTO --- */
+  .abono-container {
+    margin-top: 2.5rem !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .bg-tally-light {
+    background-color: #ffffff !important;
+  }
+
+  .text-tally-brand {
+    color: #0d6efd !important;
+  }
+
+  .btn-tally-yellow {
+    background-color: #fbc02d !important;
+    color: #121212 !important;
+    font-weight: 600;
+    border: 1px solid #e0a800 !important;
+    transition: all 0.2s ease;
+  }
+
+  .btn-tally-yellow:hover {
+    background-color: #f5b01d !important;
+    color: #121212 !important;
+    opacity: 0.9;
+  }
+
+  .btn-whatsapp {
+    background-color: #25d366 !important;
+    color: white !important;
+    font-weight: 600;
+  }
+  .btn-whatsapp:hover {
+    background-color: #1ebd56 !important;
+    opacity: 0.9;
+  }
+
+  .form-tally-control {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    color: #212529 !important;
+  }
+
+  .form-tally-control:focus {
+    background-color: #ffffff !important;
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
+  }
+
+  .form-tally-control::placeholder {
+    color: #adb5bd !important;
+  }
+
+  @media (min-width: 992px) {
+    .abono-container .card-wrapper {
+      padding: 0 3rem;
+    }
+  }
+
+  /* --- OPTIMIZACIÓN MÓVIL RESPONSIVE --- */
+  @media (max-width: 768px) {
+    .abono-container {
+      margin-top: 0 !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+
+    .abono-container .row {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    .abono-container .card-wrapper {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+
+    .abono-container .card {
+      border-radius: 0 !important;
+    }
+
+    .abono-container .card-header {
+      background-color: #fbc02d !important;
+      border-bottom: 1px solid #e0a800 !important;
+      padding-top: 1rem !important;
+      padding-bottom: 1rem !important;
+    }
+
+    /* Ajustes específicos para los botones de acción en celular */
+    .contenedor-acciones-abono {
+      flex-direction: column-reverse !important; /* Apilar verticalmente */
+      gap: 0.75rem !important;
+    }
+
+    .contenedor-acciones-abono > div,
+    .contenedor-acciones-abono #wrapperAccionCompartir {
+      width: 100% !important;
+    }
+
+    .contenedor-acciones-abono .btn {
+      width: 100% !important;
+      padding-top: 0.6rem !important;
+      padding-bottom: 0.6rem !important;
+    }
+  }
+</style>
+
+<div class="container-fluid abono-container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-11 col-lg-10 col-xl-8 card-wrapper">
+      <div class="card shadow-sm bg-tally-light border">
+        <div
+          class="card-header border-bottom d-flex justify-content-between align-items-center py-3"
+          style="background-color: #fbc02d"
+        >
+          <h5 class="mb-0 fw-bold text-dark">
+            <i class="bi bi-cash-coin text-primary me-2"></i>Registrar Abono a
+            Factura
+          </h5>
+          <span
+            class="badge bg-white text-dark border px-3 py-2 fs-6"
+            id="abonoEstadoFactura"
+          >
+            Esperando Selección
+          </span>
+        </div>
+
+        <div class="card-body p-3 p-sm-4 text-dark">
+          <div id="alertaAbono"></div>
+
+          <div class="mb-4">
+            <h6
+              class="text-tally-brand text-uppercase fw-bold mb-3"
+              style="font-size: 0.85rem; letter-spacing: 1px"
+            >
+              <i class="bi bi-search me-1"></i> 1. Buscar Factura Vinculada
+            </h6>
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-semibold text-muted"
+                  >NÚMERO DE FACTURA / CONSECUTIVO</label
+                >
+                <div class="input-group input-group-sm">
+                  <input
+                    type="text"
+                    id="abonoBuscarFactura"
+                    class="form-control form-tally-control"
+                    placeholder="Ej. FAC-00003..."
+                  />
+                  <button
+                    class="btn btn-tally-yellow"
+                    type="button"
+                    id="btnBuscarFactura"
+                    onclick="nsGestionAbonos.verificarFactura()"
+                  >
+                    <i class="bi bi-search"></i> Vincular
+                  </button>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-semibold text-muted"
+                  >CLIENTE ASOCIADO</label
+                >
+                <input
+                  type="text"
+                  id="abonoClienteNombre"
+                  class="form-control form-control-sm form-tally-control"
+                  readonly
+                  placeholder="No se ha vinculado ninguna factura"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4 d-none" id="seccionSaldosFactura">
+            <h6
+              class="text-tally-brand text-uppercase fw-bold mb-3"
+              style="font-size: 0.85rem; letter-spacing: 1px"
+            >
+              <i class="bi bi-calculator me-1"></i> 2. Estado de Cuenta actual
+            </h6>
+            <div class="row g-2">
+              <div class="col-6 col-md-4">
+                <div class="p-2 border rounded-2 bg-light text-center">
+                  <div class="small text-muted fw-semibold">TOTAL FACTURA</div>
+                  <div class="fw-bold text-dark fs-5" id="valTotalFactura">
+                    $ 0
+                  </div>
+                </div>
+              </div>
+              <div class="col-6 col-md-4">
+                <div class="p-2 border rounded-2 bg-light text-center">
+                  <div class="small text-muted fw-semibold">TOTAL ABONADO</div>
+                  <div class="fw-bold text-success fs-5" id="valTotalAbonado">
+                    $ 0
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div
+                  class="p-2 border rounded-2 text-center shadow-sm"
+                  style="
+                    background-color: #fff3cd;
+                    border-color: #ffeba2 !important;
+                  "
+                >
+                  <div class="small text-warning-dominant fw-bold text-dark">
+                    SALDO PENDIENTE
+                  </div>
+                  <div class="fw-bold text-danger fs-5" id="valSaldoPendiente">
+                    $ 0
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h6
+              class="text-tally-brand text-uppercase fw-bold mb-3"
+              style="font-size: 0.85rem; letter-spacing: 1px"
+            >
+              <i class="bi bi-wallet2 me-1"></i> 3. Datos del Abono
+            </h6>
+            <div class="row g-3">
+              <div class="col-12 col-sm-6">
+                <label class="form-label small fw-semibold text-muted"
+                  >VALOR A ABONAR ($)</label
+                >
+                <input
+                  type="number"
+                  id="abonoMonto"
+                  class="form-control form-control-sm form-tally-control fw-bold text-dark"
+                  placeholder="0"
+                  min="1"
+                  oninput="nsGestionAbonos.validarMontoEnTiempoReal()"
+                  disabled
+                />
+              </div>
+              <div class="col-12 col-sm-6">
+                <label class="form-label small fw-semibold text-muted"
+                  >MÉTODO DE PAGO</label
+                >
+                <select
+                  id="abonoMetodoPago"
+                  class="form-select form-select-sm form-tally-control"
+                  disabled
+                >
+                  <option value="" selected disabled>
+                    Seleccione una opción...
+                  </option>
+                  <option value="Efectivo">Efectivo</option>
+                  <option value="Nequi">Nequi</option>
+                  <option value="Daviplata">Daviplata</option>
+                  <option value="Transferencia Bancaria">
+                    Transferencia Bancaria
+                  </option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-semibold text-muted"
+                  >NOTAS / REFERENCIA DE TRANSACCIÓN (OPCIONAL)</label
+                >
+                <textarea
+                  id="abonoNotas"
+                  rows="2"
+                  class="form-control form-tally-control"
+                  placeholder="Ej. Comprobante de transferencia #55124..."
+                  disabled
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <hr class="text-muted my-4" />
+
+          <div
+            class="d-flex justify-content-between align-items-center mb-4 contenedor-acciones-abono"
+          >
+            <div id="wrapperAccionCompartir"></div>
+            <div
+              class="d-flex gap-2 w-100 justify-content-end flex-wrap flex-sm-nowrap"
+            >
+              <button
+                type="button"
+                class="btn btn-outline-secondary btn-sm px-4"
+                onclick="nsGestionAbonos.limpiarFormulario()"
+              >
+                Limpiar
+              </button>
+              <button
+                type="button"
+                id="btnGuardarAbono"
+                class="btn btn-tally-yellow btn-sm px-4 shadow-sm"
+                onclick="nsGestionAbonos.registrarAbono()"
+                disabled
+              >
+                <i class="bi bi-check-circle-fill me-1"></i> Procesar Abono
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-2 d-none" id="seccionHistorialAbonos">
+            <h6
+              class="text-tally-brand text-uppercase fw-bold mb-3"
+              style="font-size: 0.85rem; letter-spacing: 1px"
+            >
+              <i class="bi bi-clock-history me-1"></i> Historial de Pagos
+              Recibidos
+            </h6>
+            <div class="table-responsive border rounded-2 bg-white">
+              <table
+                class="table table-sm table-hover mb-0 align-middle"
+                style="font-size: 0.85rem"
+              >
+                <thead class="table-light text-muted">
+                  <tr>
+                    <th class="ps-3 py-2">Fecha</th>
+                    <th class="py-2">Método</th>
+                    <th class="py-2">Notas / Referencia</th>
+                    <th class="pe-3 py-2 text-end">Monto</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyHistorialAbonos"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var nsGestionAbonos = (function () {
+    let facturaSeleccionadaId = null;
+    let clienteTelefonoOriginal = "";
+    let clienteNombreOriginal = "";
+    let consecutivoFacturaOriginal = "";
+    let saldoMaximoPendiente = 0;
+
+    async function verificarFactura() {
+      const btnBuscar = document.getElementById("btnBuscarFactura");
+      const inputBusqueda = document
+        .getElementById("abonoBuscarFactura")
+        .value.trim();
+
+      if (!inputBusqueda) {
+        mostrarMensaje(
+          "Por favor escribe un número o consecutivo de factura.",
+          "warning",
+        );
+        return;
+      }
+
+      try {
+        btnBuscar.disabled = true;
+        btnBuscar.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span>`;
+
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
+        if (!session)
+          throw new Error(
+            "Sesión expirada. Por favor inicie sesión nuevamente.",
+          );
+
+        const response = await fetch(
+          `${SUPABASE_URL}/functions/v1/tally_validarEstadoFactura`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({ numero_factura: inputBusqueda }),
+          },
+        );
+
+        const resultado = await response.json();
+
+        if (!response.ok || !resultado.ok) {
+          mostrarMensaje(
+            resultado.error || "No se pudo procesar la verificación.",
+            "danger",
+          );
+          desactivarFormularioRecaudo();
+          return;
+        }
+
+        const infoFactura = resultado.dataFactura;
+        facturaSeleccionadaId = infoFactura.id;
+        clienteNombreOriginal = infoFactura.cliente_nombre;
+        consecutivoFacturaOriginal = infoFactura.numero_factura;
+        saldoMaximoPendiente = infoFactura.saldo_pendiente;
+        clienteTelefonoOriginal = infoFactura.telefono || "";
+
+        document.getElementById("abonoClienteNombre").value =
+          infoFactura.cliente_nombre;
+        document.getElementById("valTotalFactura").innerText =
+          `$ ${infoFactura.total_factura.toLocaleString("es-CO")}`;
+        document.getElementById("valTotalAbonado").innerText =
+          `$ ${infoFactura.total_abonado.toLocaleString("es-CO")}`;
+        document.getElementById("valSaldoPendiente").innerText =
+          `$ ${saldoMaximoPendiente.toLocaleString("es-CO")}`;
+
+        document
+          .getElementById("seccionSaldosFactura")
+          .classList.remove("d-none");
+
+        const contenedorHistorial = document.getElementById(
+          "seccionHistorialAbonos",
+        );
+        const tbody = document.getElementById("tbodyHistorialAbonos");
+
+        if (tbody && contenedorHistorial) {
+          tbody.innerHTML = "";
+          if (
+            infoFactura.historial_abonos &&
+            Array.isArray(infoFactura.historial_abonos) &&
+            infoFactura.historial_abonos.length > 0
+          ) {
+            infoFactura.historial_abonos.forEach((abono) => {
+              let fechaFormateada = "Sin fecha";
+              if (abono.created_at) {
+                fechaFormateada = new Date(abono.created_at).toLocaleDateString(
+                  "es-CO",
+                  {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  },
+                );
+              }
+              const montoNumerico = parseFloat(abono.monto_abono) || 0;
+              const notasTexto =
+                abono.notes || abono.notas
+                  ? (abono.notes || abono.notas).trim()
+                  : "<em>Sin observaciones</em>";
+              const metodoTexto = abono.metodo_pago || "N/A";
+
+              const fila = document.createElement("tr");
+              fila.innerHTML = `
+                <td class="ps-3 text-secondary" style="padding: 0.5rem 0.25rem;">${fechaFormateada}</td>
+                <td style="padding: 0.5rem 0.25rem;"><span class="badge bg-light text-dark border">${metodoTexto}</span></td>
+                <td class="text-muted text-truncate" style="max-width: 240px; padding: 0.5rem 0.25rem;">${notasTexto}</td>
+                <td class="pe-3 fw-bold text-end text-dark" style="padding: 0.5rem 0.25rem;">$ ${montoNumerico.toLocaleString("es-CO")}</td>
+              `;
+              tbody.appendChild(fila);
+            });
+            contenedorHistorial.classList.remove("d-none");
+            contenedorHistorial.style.display = "block";
+          } else {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center p-3 text-muted small">Sin abonos previos registrados</td></tr>`;
+            contenedorHistorial.classList.remove("d-none");
+            contenedorHistorial.style.display = "block";
+          }
+        }
+
+        const badgeEstado = document.getElementById("abonoEstadoFactura");
+        if (!resultado.permitirAbono) {
+          badgeEstado.className =
+            "badge bg-success text-white border px-3 py-2 fs-6";
+          badgeEstado.innerText = "Factura Pagada";
+          desactivarFormularioRecaudo();
+          mostrarMensaje(resultado.motivo, "success");
+        } else {
+          badgeEstado.className =
+            "badge bg-warning text-dark border px-3 py-2 fs-6";
+          badgeEstado.innerText = "Con Saldo Pendiente";
+          activarFormularioRecaudo();
+          document.getElementById("abonoMonto").max = saldoMaximoPendiente;
+        }
+      } catch (err) {
+        console.error(err);
+        mostrarMensaje(
+          err.message || "Error al conectar con el servidor.",
+          "danger",
+        );
+      } finally {
+        btnBuscar.disabled = false;
+        btnBuscar.innerHTML = `<i class="bi bi-search"></i> Vincular`;
+      }
+    }
+
+    function validarMontoEnTiempoReal() {
+      const inputMonto = document.getElementById("abonoMonto");
+      const btnGuardar = document.getElementById("btnGuardarAbono");
+      const montoDigitado = parseFloat(inputMonto.value) || 0;
+
+      if (montoDigitado > saldoMaximoPendiente) {
+        mostrarMensaje(
+          `El monto ingresado ($${montoDigitado.toLocaleString("es-CO")}) supera el saldo pendiente real ($${saldoMaximoPendiente.toLocaleString("es-CO")}).`,
+          "danger",
+        );
+        btnGuardar.disabled = true;
+      } else {
+        const alertaContainer = document.getElementById("alertaAbono");
+        if (alertaContainer.innerHTML.includes("supera el saldo pendiente")) {
+          alertaContainer.innerHTML = "";
+        }
+        btnGuardar.disabled = montoDigitado <= 0;
+      }
+    }
+
+    async function registrarAbono() {
+      const recuadroBoton = document.getElementById("btnGuardarAbono");
+      const monto =
+        parseFloat(document.getElementById("abonoMonto").value) || 0;
+      const metodo = document.getElementById("abonoMetodoPago").value;
+      const notas = document.getElementById("abonoNotas").value.trim();
+
+      if (!facturaSeleccionadaId) {
+        mostrarMensaje(
+          "Vincule una factura válida antes de procesar.",
+          "danger",
+        );
+        return;
+      }
+      if (monto <= 0 || !metodo) {
+        mostrarMensaje(
+          "Por favor define un monto de abono válido y el método de recaudo.",
+          "warning",
+        );
+        return;
+      }
+      if (monto > saldoMaximoPendiente) {
+        mostrarMensaje(
+          `El monto ingresado supera el saldo pendiente real ($${saldoMaximoPendiente.toLocaleString("es-CO")}).`,
+          "danger",
+        );
+        return;
+      }
+
+      try {
+        recuadroBoton.disabled = true;
+        recuadroBoton.innerHTML = `<span class="spinner-border spinner-border-sm me-1" role="status"></span> Procesando...`;
+
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
+        if (!session)
+          throw new Error(
+            "Sesión expirada. Por favor inicie sesión nuevamente.",
+          );
+
+        const payloadAbono = {
+          numero_factura: consecutivoFacturaOriginal,
+          monto_abono: monto,
+          metodo_pago: metodo,
+          notas: notas || "",
+        };
+
+        const response = await fetch(
+          `${SUPABASE_URL}/functions/v1/tally_adicionarAbono`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify(payloadAbono),
+          },
+        );
+
+        const result = await response.json();
+
+        if (!result.ok) {
+          mostrarMensaje(
+            result.error || "Ocurrió un inconveniente al registrar el abono.",
+            "danger",
+          );
+          return;
+        }
+
+        mostrarMensaje(`¡Abono registrado con éxito!`, "success");
+
+        const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${facturaSeleccionadaId}`;
+
+        // Inyección del botón con la corrección estructural
+        document.getElementById("wrapperAccionCompartir").innerHTML = `
+          <button type="button" class="btn btn-sm btn-whatsapp shadow-sm px-3" 
+            onclick="nsGestionAbonos.compartirComprobanteAbono('${clienteNombreOriginal}', '${consecutivoFacturaOriginal}', '${urlSeguraPdf}', '${clienteTelefonoOriginal}', ${monto}, ${result.nuevoAbono ? saldoMaximoPendiente - monto : 0})">
+            <i class="bi bi-whatsapp"></i> Notificar Pago por WhatsApp
+          </button>
+        `;
+
+        limpiarFormularioDespuesRecaudo();
+        document.getElementById("abonoBuscarFactura").value =
+          consecutivoFacturaOriginal;
+        await verificarFactura();
+      } catch (err) {
+        console.error(err);
+        mostrarMensaje(err.message || "Fallo crítico en la red.", "danger");
+      } finally {
+        recuadroBoton.disabled = false;
+        recuadroBoton.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> Procesar Abono`;
+      }
+    }
+
+    function compartirComprobanteAbono(
+      clienteNombre,
+      numeroFactura,
+      urlSeguraPdf,
+      numTelefono,
+      valorAbonado,
+      saldoRestante,
+    ) {
+      try {
+        let telefonoLimpio = numTelefono
+          ? numTelefono.replace(/[^0-9]/g, "")
+          : "";
+
+        // --- ADICIÓN DEL CÓDIGO DE ÁREA SEGURO ---
+        if (telefonoLimpio.length === 10) {
+          telefonoLimpio = "57" + telefonoLimpio; // Colombia por defecto si tiene 10 dígitos
+        } else if (
+          telefonoLimpio.length === 9 &&
+          (telefonoLimpio.startsWith("9") || telefonoLimpio.startsWith("8"))
+        ) {
+          // Ojo si manejas otro país de forma dinámica, pero forzar el prefijo soluciona el envío
+          telefonoLimpio = "57" + telefonoLimpio;
+        }
+
+        const textoMsg = `Hola *${clienteNombre}*, hemos recibido correctamente tu abono por un valor de *$${valorAbonado.toLocaleString("es-CO")}* para la factura de venta *${numeroFactura}*.\n\n*Saldo Pendiente:* $${saldoRestante.toLocaleString("es-CO")}\n\nPuedes consultar tu estado y el PDF actualizado aquí: ${urlSeguraPdf}`;
+        const destino = telefonoLimpio ? `phone=${telefonoLimpio}&` : "";
+        const urlWhatsApp = `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`;
+
+        window.open(urlWhatsApp, "_blank");
+      } catch (err) {
+        console.error("Fallo al procesar reenvío de WhatsApp", err);
+      }
+    }
+
+    function activarFormularioRecaudo() {
+      document.getElementById("abonoMonto").disabled = false;
+      document.getElementById("abonoMetodoPago").disabled = false;
+      document.getElementById("abonoNotas").disabled = false;
+      document.getElementById("btnGuardarAbono").disabled = false;
+    }
+
+    function desactivarFormularioRecaudo() {
+      document.getElementById("abonoMonto").disabled = true;
+      document.getElementById("abonoMetodoPago").disabled = true;
+      document.getElementById("abonoNotas").disabled = true;
+      document.getElementById("btnGuardarAbono").disabled = true;
+    }
+
+    function limpiarFormulario() {
+      document.getElementById("abonoBuscarFactura").value = "";
+      document.getElementById("abonoClienteNombre").value = "";
+      document.getElementById("seccionSaldosFactura").classList.add("d-none");
+      document.getElementById("wrapperAccionCompartir").innerHTML = "";
+
+      const contenedorHistorial = document.getElementById(
+        "seccionHistorialAbonos",
+      );
+      if (contenedorHistorial) {
+        contenedorHistorial.classList.add("d-none");
+        contenedorHistorial.style.display = "none";
+      }
+      const tbody = document.getElementById("tbodyHistorialAbonos");
+      if (tbody) tbody.innerHTML = "";
+
+      const badgeEstado = document.getElementById("abonoEstadoFactura");
+      badgeEstado.className = "badge bg-white text-dark border px-3 py-2 fs-6";
+      badgeEstado.innerText = "Esperando Selección";
+
+      facturaSeleccionadaId = null;
+      clienteTelefonoOriginal = "";
+      clienteNombreOriginal = "";
+      consecutivoFacturaOriginal = "";
+      saldoMaximoPendiente = 0;
+
+      limpiarFormularioDespuesRecaudo();
+      desactivarFormularioRecaudo();
+    }
+
+    function limpiarFormularioDespuesRecaudo() {
+      document.getElementById("abonoMonto").value = "";
+      document.getElementById("abonoMetodoPago").value = "";
+      document.getElementById("abonoNotas").value = "";
+    }
+
+    function mostrarMensaje(msg, tipo) {
+      document.getElementById("alertaAbono").innerHTML = `
+        <div class="alert alert-${tipo} border-1 text-dark alert-dismissible fade show shadow-sm" role="alert" style="background-color: #ffffff;">
+          <span class="${tipo === "danger" ? "text-danger" : tipo === "success" ? "text-success" : "text-warning"} fw-bold">■</span> ${msg}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      `;
+    }
+
+    return {
+      verificarFactura,
+      validarMontoEnTiempoReal,
+      registrarAbono,
+      compartirComprobanteAbono,
+      limpiarFormulario,
+    };
+  })();
+
+  document.addEventListener("DOMContentLoaded", () => {
+    nsGestionAbonos.limpiarFormulario();
+  });
+</script>

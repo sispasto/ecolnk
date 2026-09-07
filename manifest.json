@@ -1,6 +1,6 @@
 {
-  "name": "ecolnk",
-  "short_name": "ecolnk",
+  "name": "Tally",
+  "short_name": "Tally",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

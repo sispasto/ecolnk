@@ -1,0 +1,204 @@
+/* Estilos para mejorar el diseño del formulario */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
+html,
+body {
+  height: auto;
+  overflow-y: auto;
+  font-family: "Poppins", sans-serif;
+}
+
+.modal-dialog {
+  margin-top: 70px !important;
+}
+
+#loginModal .modal-content,
+#changePasswordModal .modal-content {
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#loginForm,
+.modal-body form {
+  padding: 20px;
+}
+
+#loginForm .form-label,
+.modal-body .form-label {
+  font-weight: bold;
+}
+
+#loginForm .form-control,
+.modal-body .form-control {
+  border-radius: 8px;
+}
+
+#loginForm .btn-primary,
+.modal-body .btn-primary {
+  background-color: black;
+  border-color: black;
+  border-radius: 8px;
+}
+
+#loginForm .btn-primary:hover,
+.modal-body .btn-primary:hover {
+  background-color: #333;
+}
+
+/* Ajustes adicionales */
+.navbar-collapse {
+  transition: height 0.3s ease;
+}
+
+/* ==========================================================================
+   ESTILO PROFESIONAL ORIGINAL OSCURO - HOVER LIGHT GRAY CLEAN
+   ========================================================================== */
+
+/* Contenedor Offcanvas para unificar todo el fondo oscuro */
+#offcanvasDarkNavbar.offcanvas {
+  background: #1a1d20 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.offcanvas-body {
+  padding-top: 1.5rem !important;
+  background: #343a40 !important; /* Mantenemos tu gris casi negro original */
+}
+
+/* Encabezado donde sale Luis Almeida */
+#offcanvasDarkNavbar .offcanvas-header {
+  background: #1a1d20 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+#offcanvasDarkNavbar .offcanvas-title {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* Encabezados de sección (COTIZACIONES, FACTURAS) */
+.section-header {
+  font-size: 0.8rem !important;
+  letter-spacing: 0.8px;
+  color: #fff !important; /* Gris azulado nítido */
+  text-transform: uppercase;
+  font-weight: 700 !important;
+  padding: 14px 15px 6px 15px !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Iconos de cabecera Pro: Azul nítido corporativo para destacar */
+.section-header i {
+  color: #fff !important;
+  font-size: 0.9rem !important;
+}
+
+/* Enlaces principales del menú */
+#offcanvasDarkNavbar .nav-linkInput,
+#offcanvasDarkNavbar .nav-link:not(.section-header) {
+  color: #94a3b8 !important; /* Gris claro de base para que resalte al activarse */
+  font-weight: 500;
+  padding: 10px 16px !important;
+  margin: 2px 10px !important;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Iconos de las opciones (Crear, Consultar) */
+#offcanvasDarkNavbar .nav-link:not(.section-header) i {
+  color: #64748b !important;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+
+/* NUEVO EFECTO MOUSE OVER (HOVER) Y ACTIVO - LIGHT GRAY PREMIUM */
+#offcanvasDarkNavbar .nav-link:not(.section-header):hover,
+#offcanvasDarkNavbar .nav-link.active {
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.08
+  ) !important; /* Pastilla gris clara translúcida limpia */
+  color: #ffffff !important; /* El texto pasa a blanco puro impecable */
+  padding-left: 20px !important; /* Sutil desplazamiento dinámico */
+}
+
+/* Los iconos se iluminan en blanco nítido al pasar el mouse */
+#offcanvasDarkNavbar .nav-link:not(.section-header):hover i,
+#offcanvasDarkNavbar .nav-link.active i {
+  color: #ffffff !important;
+}
+
+/* ==========================================================================
+   ICONOS DE SUBMENÚS CON COLOR PROPIO
+   ========================================================================== */
+
+/* Submenús en reposo: Mantenemos tu texto en blanco suave */
+.submenu-list .nav-link {
+  font-size: 0.86rem !important;
+  padding: 8px 16px !important;
+  color: #cbd5e1 !important;
+  font-weight: 400;
+  transition: all 0.2s ease-in-out;
+}
+
+/* --- COLORES PARA LOS ICONOS EN REPOSO --- */
+
+/* Iconos de Cotizaciones: Amarillo/Ámbar corporativo */
+#catFinanzas .submenu-list .nav-link i {
+  color: #fff !important;
+  transition: transform 0.2s ease;
+}
+
+/* Iconos de Facturas: Celeste/Azul brillante nítido */
+#catFacturas .submenu-list .nav-link i {
+  color: #fff !important;
+  transition: transform 0.2s ease;
+}
+
+/* --- MOUSE OVER (HOVER) EN SUBMENÚS --- */
+.submenu-list .nav-link:hover {
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.08
+  ) !important; /* Tu pastilla light gray limpia */
+  color: #ffffff !important; /* El texto cambia a blanco puro brillante */
+  padding-left: 20px !important; /* Micro desplazamiento dinámico */
+}
+
+/* Al pasar el mouse, los iconos mantienen su color pero ganan un sutil realce */
+.submenu-list .nav-link:hover i {
+  transform: scale(1.1); /* Ligero crecimiento pro al pasar el cursor */
+}
+
+/* Animación del Chevron */
+.section-header[aria-expanded="true"] .chevron-icon {
+  transform: rotate(90deg);
+  color: #ffffff !important;
+}
+
+.chevron-icon {
+  transition: transform 0.3s ease;
+  color: #475569 !important;
+  font-size: 0.8rem;
+}
+
+/* Enlaces especiales (Seguridad / Salir) */
+#offcanvasDarkNavbar .text-danger {
+  color: #94a3b8 !important;
+}
+#offcanvasDarkNavbar .text-danger:hover {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+}
+#offcanvasDarkNavbar .text-danger:hover i {
+  color: #ef4444 !important;
+}

@@ -1,0 +1,652 @@
+<style>
+  .factura-container {
+    margin-top: 2.5rem !important;
+    margin-bottom: 2rem !important;
+  }
+  .tabla-factura {
+    font-size: 0.95rem;
+    color: #212529;
+  }
+  .bg-tally-light {
+    background-color: #ffffff !important;
+  }
+  .text-tally-brand {
+    color: #0d6efd !important;
+  }
+  .btn-tally-yellow {
+    background-color: #fbc02d !important;
+    color: #121212 !important;
+    font-weight: 600;
+    border: 1px solid #e0a800 !important;
+    transition: all 0.2s ease;
+  }
+  .btn-tally-yellow:hover {
+    background-color: #f5b01d !important;
+    opacity: 0.9;
+  }
+  .form-tally-control {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    color: #212529 !important;
+  }
+  .form-tally-control:focus {
+    background-color: #ffffff !important;
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
+  }
+
+  .btn-back-icon-tally {
+    background: transparent !important;
+    border: none !important;
+    color: #212529 !important;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+  }
+  .btn-back-icon-tally i {
+    font-size: 1.65rem;
+    line-height: 1;
+  }
+  .btn-back-icon-tally:hover {
+    color: #0d6efd !important;
+    transform: translateX(-3px);
+  }
+
+  /* Estilos específicos para las tarjetas de ítems en móvil */
+  .item-card-mobile {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  @media (max-width: 768px) {
+    .factura-container {
+      margin-top: 0 !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+    .factura-container .card {
+      border-radius: 0 !important;
+    }
+    .factura-container .card-header {
+      background-color: #fbc02d !important;
+      border-bottom: 1px solid #e0a800 !important;
+    }
+  }
+</style>
+
+<div class="container-fluid factura-container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-11 col-lg-10 col-xl-9 card-wrapper">
+      <div class="card shadow-sm bg-tally-light border">
+        <div
+          class="card-header border-bottom d-flex justify-content-between align-items-center py-3"
+          style="background-color: #fbc02d"
+        >
+          <div class="d-flex align-items-center gap-3">
+            <button
+              type="button"
+              class="btn btn-back-icon-tally me-1"
+              onclick="
+                consultarFacturas();
+                window.location.hash = '#consultar-facturas';
+              "
+              title="Volver al listado"
+            >
+              <i class="bi bi-arrow-left-circle-fill"></i>
+            </button>
+            <h5 class="mb-0 fw-bold text-dark">
+              <i class="bi bi-pencil-square text-primary me-1"></i>Modificar
+              Factura
+            </h5>
+          </div>
+          <span
+            class="badge bg-white text-dark border px-3 py-2 fs-6"
+            id="editFactNumero"
+          >
+            Cargando...
+          </span>
+        </div>
+
+        <div class="card-body p-3 p-sm-4 text-dark">
+          <div id="alertaEditarFactura"></div>
+
+          <!-- CLIENTE -->
+          <div class="mb-4">
+            <h6
+              class="text-tally-brand text-uppercase fw-bold mb-3"
+              style="font-size: 0.85rem; letter-spacing: 1px"
+            >
+              <i class="bi bi-person me-1"></i> Datos del Cliente
+            </h6>
+            <div class="row g-3">
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-semibold text-muted"
+                  >NOMBRE / RAZÓN SOCIAL</label
+                >
+                <input
+                  type="text"
+                  id="editFactClienteNombre"
+                  class="form-control form-control-sm form-tally-control"
+                />
+              </div>
+              <div class="col-12 col-sm-6 col-md-4">
+                <label class="form-label small fw-semibold text-muted"
+                  >DIRECCIÓN</label
+                >
+                <input
+                  type="text"
+                  id="editFactClienteDireccion"
+                  class="form-control form-control-sm form-tally-control"
+                />
+              </div>
+              <div class="col-12 col-sm-6 col-md-4">
+                <label class="form-label small fw-semibold text-muted"
+                  >TELÉFONO / CELULAR</label
+                >
+                <input
+                  type="text"
+                  id="editFactClienteTelefono"
+                  class="form-control form-control-sm form-tally-control"
+                  maxlength="10"
+                  inputmode="numeric"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- AGREGAR -->
+          <div class="mb-4">
+            <h6
+              class="text-tally-brand text-uppercase fw-bold mb-3"
+              style="font-size: 0.85rem; letter-spacing: 1px"
+            >
+              <i class="bi bi-box-seam me-1"></i> Agregar Productos o Servicios
+            </h6>
+            <div class="row g-2 align-items-end">
+              <div class="col-12 col-md-5">
+                <label class="form-label small fw-semibold text-muted"
+                  >DESCRIPCIÓN DEL ÍTEM</label
+                >
+                <input
+                  type="text"
+                  id="editFactItemDescripcion"
+                  class="form-control form-control-sm form-tally-control"
+                  placeholder="Ej. Modificación de ítem..."
+                />
+              </div>
+              <div class="col-6 col-md-2">
+                <label
+                  class="form-label small fw-semibold text-muted text-center d-block"
+                  >CANT.</label
+                >
+                <input
+                  type="number"
+                  id="editFactItemCantidad"
+                  class="form-control form-control-sm form-tally-control text-center"
+                  min="1"
+                  value="1"
+                />
+              </div>
+              <div class="col-6 col-md-3">
+                <label
+                  class="form-label small fw-semibold text-muted text-end d-block"
+                  >PRECIO UND ($)</label
+                >
+                <input
+                  type="number"
+                  id="editFactItemPrecio"
+                  class="form-control form-control-sm form-tally-control text-end"
+                  placeholder="0"
+                />
+              </div>
+              <div class="col-12 col-md-2">
+                <button
+                  type="button"
+                  class="btn btn-tally-yellow btn-sm w-100"
+                  onclick="nsEditarFactura.agregarItem()"
+                >
+                  <i class="bi bi-plus-lg me-1"></i> Añadir
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- VISTA ESCRITORIO: TABLA (Oculta en móviles) -->
+          <div class="table-responsive rounded-2 border mb-4 d-none d-md-block">
+            <table class="table table-hover mb-0 tabla-factura">
+              <thead class="table-light border-bottom">
+                <tr
+                  class="text-muted"
+                  style="font-size: 0.8rem; font-weight: 700"
+                >
+                  <th class="ps-3 text-uppercase" style="width: 45%">
+                    Descripción
+                  </th>
+                  <th class="text-center text-uppercase" style="width: 15%">
+                    Cantidad
+                  </th>
+                  <th class="text-end text-uppercase" style="width: 20%">
+                    Precio Und
+                  </th>
+                  <th class="text-end text-uppercase" style="width: 20%">
+                    Total
+                  </th>
+                  <th class="text-center" style="width: 5%"></th>
+                </tr>
+              </thead>
+              <tbody id="tbodyEditarFacturaItems" class="border-0"></tbody>
+            </table>
+          </div>
+
+          <!-- VISTA MÓVIL: CONTENEDOR DE TARJETA / CARDS (Oculto en PC) -->
+          <div id="contenedorFacturaItemsMobile" class="d-md-none mb-4"></div>
+
+          <!-- TOTAL -->
+          <div class="row justify-content-end mb-4">
+            <div class="col-12 col-md-5">
+              <div
+                class="d-flex justify-content-between align-items-center p-3 rounded-2 bg-light border shadow-sm"
+              >
+                <span
+                  class="text-muted fw-bold text-uppercase"
+                  style="font-size: 0.85rem; letter-spacing: 1px"
+                  >TOTAL GENERAL</span
+                >
+                <span
+                  class="fw-bold text-tally-brand fs-4"
+                  id="editFactTxtTotal"
+                  >$ 0</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <hr class="text-muted my-4" />
+
+          <!-- BOTONES INFERIORES -->
+          <div class="d-flex justify-content-end gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm px-4"
+              onclick="
+                consultarFacturas();
+                window.location.hash = '#consultar-facturas';
+              "
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              id="btnActualizarFactura"
+              class="btn btn-tally-yellow btn-sm px-4 shadow-sm"
+              onclick="nsEditarFactura.guardarCambios()"
+            >
+              <i class="bi bi-cloud-arrow-up-fill me-1"></i> Aplicar Corrección
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  if (!window.nsEditarFacturaInstancia) {
+    window.nsEditarFacturaInstancia = (function () {
+      let itemsDetalle = [];
+      let totalGeneral = 0;
+      let idFacturaActiva = null;
+      let estadoOriginal = null;
+
+      function generarIdUnico(idx = 0) {
+        return (
+          "item_" +
+          Date.now() +
+          "_" +
+          idx +
+          "_" +
+          Math.floor(Math.random() * 1000)
+        );
+      }
+
+      function calcularTotales() {
+        totalGeneral = itemsDetalle.reduce((acc, item) => acc + item.total, 0);
+        document.getElementById("editFactTxtTotal").innerText =
+          `$ ${totalGeneral.toLocaleString("es-CO")}`;
+        console.log("[DEBUG] Recalculando total general:", totalGeneral);
+      }
+
+      async function cargarDatosFactura(idFactura) {
+        console.log(
+          "[DEBUG] Instancia Activa - Cargando datos para ID:",
+          idFactura,
+        );
+        idFacturaActiva = idFactura;
+        itemsDetalle = [];
+        estadoOriginal = null;
+
+        if (
+          typeof supabaseClient === "undefined" ||
+          typeof SUPABASE_URL === "undefined"
+        ) {
+          console.warn(
+            "Componentes de conexión no listos en el DOM. Reintentando...",
+          );
+          setTimeout(() => cargarDatosFactura(idFactura), 200);
+          return;
+        }
+
+        try {
+          const {
+            data: { session },
+          } = await supabaseClient.auth.getSession();
+          if (!session) throw new Error("Sesión inválida o expirada.");
+
+          const response = await fetch(
+            `${SUPABASE_URL}/functions/v1/tally_leerFactura?id=${idFactura}&_t=${Date.now()}`,
+            {
+              method: "GET",
+              headers: { Authorization: `Bearer ${session.access_token}` },
+            },
+          );
+
+          const result = await response.json();
+          if (!result.ok)
+            throw new Error(result.error || "No se pudo recuperar la factura");
+
+          const factura = result.factura;
+
+          document.getElementById("editFactNumero").innerText =
+            factura.numero_factura;
+          document.getElementById("editFactClienteNombre").value =
+            factura.cliente_nombre;
+          document.getElementById("editFactClienteDireccion").value =
+            factura.cliente_direccion || "";
+          document.getElementById("editFactClienteTelefono").value =
+            factura.cliente_telefono || "";
+
+          itemsDetalle = (factura.items || []).map((d, idx) => ({
+            id: d.id ? String(d.id) : generarIdUnico(idx),
+            descripcion: d.descripcion,
+            amount: parseInt(d.cantidad) || 0,
+            price: parseFloat(d.precio_unitario) || 0,
+            total: parseFloat(d.total_linea) || 0,
+          }));
+
+          console.log(
+            "[DEBUG] Items cargados en la instancia:",
+            JSON.parse(JSON.stringify(itemsDetalle)),
+          );
+
+          estadoOriginal = {
+            nombre: factura.cliente_nombre,
+            direccion: factura.cliente_direccion || "",
+            telefono: factura.cliente_telefono || "",
+            items: itemsDetalle.map((item) => ({
+              descripcion: item.descripcion.toUpperCase(),
+              amount: item.amount,
+              price: item.price,
+            })),
+          };
+
+          renderItems();
+        } catch (err) {
+          console.error("[ERROR] En cargarDatosFactura:", err);
+          mostrarMensaje(
+            "Error al intentar recuperar la factura: " + err.message,
+            "danger",
+          );
+        }
+      }
+
+      function agregarItem() {
+        const desc = document
+          .getElementById("editFactItemDescripcion")
+          .value.trim();
+        const cant =
+          parseInt(document.getElementById("editFactItemCantidad").value) || 0;
+        const precio =
+          parseFloat(document.getElementById("editFactItemPrecio").value) || 0;
+
+        if (!desc || cant <= 0 || precio <= 0) {
+          mostrarMensaje(
+            "Verifica las propiedades del ítem a añadir.",
+            "warning",
+          );
+          return;
+        }
+
+        const nuevoItem = {
+          id: generarIdUnico(itemsDetalle.length),
+          descripcion: desc.toUpperCase(),
+          amount: cant,
+          price: precio,
+          total: cant * precio,
+        };
+
+        itemsDetalle.push(nuevoItem);
+        console.log("[DEBUG] Item agregado a la lista:", nuevoItem);
+
+        document.getElementById("editFactItemDescripcion").value = "";
+        document.getElementById("editFactItemCantidad").value = "1";
+        document.getElementById("editFactItemPrecio").value = "";
+        renderItems();
+      }
+
+      function eliminarItem(idABorrar) {
+        console.log(
+          "[DEBUG] Intentando eliminar Item con ID recibido:",
+          idABorrar,
+        );
+
+        const existeItem = itemsDetalle.some(
+          (item) => String(item.id) === String(idABorrar),
+        );
+        if (!existeItem) {
+          console.warn("[DEBUG] El ítem no se encontró en el arreglo actual.");
+          return;
+        }
+
+        itemsDetalle = itemsDetalle.filter(
+          (item) => String(item.id) !== String(idABorrar),
+        );
+
+        renderItems();
+      }
+
+      function renderItems() {
+        const tbody = document.getElementById("tbodyEditarFacturaItems");
+        const divMobile = document.getElementById(
+          "contenedorFacturaItemsMobile",
+        );
+
+        if (!tbody || !divMobile) return;
+
+        // Limpieza de contenedores antes de renderizar
+        tbody.textContent = "";
+        divMobile.textContent = "";
+
+        if (!itemsDetalle.length) {
+          const mensajeVacio = `
+            <div class="text-center text-muted py-4 w-100" style="font-style: italic;">
+              La lista quedó vacía. Añade un ítem o vuelve atrás.
+            </div>
+          `;
+          tbody.innerHTML = `<tr><td colspan="5">${mensajeVacio}</td></tr>`;
+          divMobile.innerHTML = mensajeVacio;
+          calcularTotales();
+          return;
+        }
+
+        let htmlDesktop = "";
+        let htmlMobile = "";
+
+        itemsDetalle.forEach((item) => {
+          // Render para PC (Tabla)
+          htmlDesktop += `
+            <tr class="align-middle border-bottom" style="background-color: #ffffff;">
+              <td class="ps-3 fw-medium text-dark">${item.descripcion}</td>
+              <td class="text-center fw-bold text-primary">${item.amount}</td>
+              <td class="text-end text-secondary">$ ${item.price.toLocaleString("es-CO")}</td>
+              <td class="text-end fw-bold text-dark">$ ${item.total.toLocaleString("es-CO")}</td>
+              <td class="text-center pe-3">
+                <button type="button" class="btn btn-link btn-sm text-danger p-0" onclick="nsEditarFactura.eliminarItem('${item.id}')">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+
+          // Render para Celular (Cards adaptativas)
+          htmlMobile += `
+            <div class="item-card-mobile">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="fw-bold text-dark pe-2" style="font-size: 0.95rem;">${item.descripcion}</div>
+                <button type="button" class="btn btn-sm btn-outline-danger border-0 p-1 line-height-1" onclick="nsEditarFactura.eliminarItem('${item.id}')" style="margin-top: -4px;">
+                  <i class="bi bi-trash3 fs-5"></i>
+                </button>
+              </div>
+              <div class="row g-1 pt-2 border-top style="font-size: 0.85rem;">
+                <div class="col-4">
+                  <span class="text-muted d-block small text-uppercase">Cant.</span>
+                  <span class="fw-bold text-primary">${item.amount}</span>
+                </div>
+                <div class="col-4 text-center">
+                  <span class="text-muted d-block small text-uppercase">Precio Und.</span>
+                  <span class="text-secondary">$ ${item.price.toLocaleString("es-CO")}</span>
+                </div>
+                <div class="col-4 text-end">
+                  <span class="text-muted d-block small text-uppercase">Total</span>
+                  <span class="fw-bold text-dark">$ ${item.total.toLocaleString("es-CO")}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        tbody.innerHTML = htmlDesktop;
+        divMobile.innerHTML = htmlMobile;
+        calcularTotales();
+      }
+
+      async function guardarCambios() {
+        const btn = document.getElementById("btnActualizarFactura");
+        const nombre = document
+          .getElementById("editFactClienteNombre")
+          .value.trim();
+        const direccion = document
+          .getElementById("editFactClienteDireccion")
+          .value.trim();
+        const telefono = document
+          .getElementById("editFactClienteTelefono")
+          .value.trim();
+
+        if (!nombre || !direccion) {
+          return mostrarMensaje(
+            "Rellene campos mandatorios de identidad.",
+            "danger",
+          );
+        }
+
+        if (!itemsDetalle.length) {
+          return mostrarMensaje(
+            "La grilla no puede estar vacía. Agregue un producto o servicio.",
+            "danger",
+          );
+        }
+
+        const itemsActualesMapeados = itemsDetalle.map((item) => ({
+          descripcion: item.descripcion.toUpperCase(),
+          amount: item.amount,
+          price: item.price,
+        }));
+
+        const noCambioCliente =
+          estadoOriginal.nombre === nombre &&
+          estadoOriginal.direccion === direccion &&
+          estadoOriginal.telefono === telefono;
+
+        const noCambioItems =
+          JSON.stringify(estadoOriginal.items) ===
+          JSON.stringify(itemsActualesMapeados);
+
+        if (noCambioCliente && noCambioItems) {
+          return mostrarMensaje(
+            "Debe existir al menos una modificación en la factura para poder actualizar.",
+            "warning",
+          );
+        }
+
+        try {
+          btn.disabled = true;
+          const {
+            data: { session },
+          } = await supabaseClient.auth.getSession();
+          if (!session) throw new Error("Expiró la autenticación");
+
+          const payload = {
+            factura_id: idFacturaActiva,
+            cliente_nombre: nombre,
+            cliente_direccion: direccion,
+            cliente_telefono: telefono || null,
+            total_factura: totalGeneral,
+            items: itemsDetalle.map((item) => ({
+              descripcion: item.descripcion,
+              amount: item.amount,
+              price: item.price,
+            })),
+          };
+
+          const response = await fetch(
+            `${SUPABASE_URL}/functions/v1/tally_editarFactura`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${session.access_token}`,
+              },
+              body: JSON.stringify(payload),
+            },
+          );
+
+          const result = await response.json();
+          if (!result.ok)
+            throw new Error(
+              result.error || "Error al procesar la actualización",
+            );
+
+          mostrarMensaje("¡Factura modificada con éxito!", "success");
+
+          setTimeout(() => {
+            consultarFacturas();
+            window.location.hash = "#consultar-facturas";
+          }, 1200);
+        } catch (err) {
+          console.error("[ERROR] En guardarCambios:", err);
+          mostrarMensaje(err.message || "Error al sincronizar datos", "danger");
+          btn.disabled = false;
+        }
+      }
+
+      function mostrarMensaje(msg, tipo) {
+        document.getElementById("alertaEditarFactura").innerHTML = `
+          <div class="alert alert-${tipo} border-1 text-dark alert-dismissible fade show shadow-sm" role="alert" style="background-color: #ffffff;">
+            <span class="${tipo === "danger" ? "text-danger" : tipo === "success" ? "text-success" : "text-warning"} fw-bold">■</span> ${msg}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        `;
+      }
+
+      return { cargarDatosFactura, agregarItem, eliminarItem, guardarCambios };
+    })();
+  }
+
+  var nsEditarFactura = window.nsEditarFacturaInstancia;
+</script>

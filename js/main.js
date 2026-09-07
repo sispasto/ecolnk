@@ -6,6 +6,82 @@ let swRegistration = null; // 🔥 referencia global
 let intervalSW = null;
 let newVersionAvailable = null;
 
+function gestionarCotizaciones() {
+  let main = document.getElementById("App");
+  removeALLChilds(main);
+  const frmCotizacion = document.createElement("crear-cotizacion");
+  frmCotizacion.setAttribute("container", "#App"); // <-- aquí pasas el parámetro
+  main.appendChild(frmCotizacion);
+}
+
+function abonaraFactura() {
+  let main = document.getElementById("App");
+  removeALLChilds(main);
+  const frmAbonarFactura = document.createElement("adicionar-abono");
+  frmAbonarFactura.setAttribute("container", "#App"); // <-- aquí pasas el parámetro
+  main.appendChild(frmAbonarFactura);
+}
+
+function consultarCotizaciones() {
+  let main = document.getElementById("App");
+  removeALLChilds(main);
+  const frmHistorialCotizaciones = document.createElement(
+    "historial-cotizaciones",
+  );
+  frmHistorialCotizaciones.setAttribute("container", "#App"); // <-- aquí pasas el parámetro
+  main.appendChild(frmHistorialCotizaciones);
+}
+
+function gestionarFacturas() {
+  let main = document.getElementById("App");
+  removeALLChilds(main);
+  const frmFactura = document.createElement("crear-factura");
+  frmFactura.setAttribute("container", "#App"); // <-- aquí pasas el parámetro
+  main.appendChild(frmFactura);
+}
+
+function consultarFacturas() {
+  let main = document.getElementById("App");
+  removeALLChilds(main);
+  const frmHistorialFacturas = document.createElement("historial-facturas");
+  frmHistorialFacturas.setAttribute("container", "#App"); // <-- aquí pasas el parámetro
+  main.appendChild(frmHistorialFacturas);
+}
+
+function gestionarEdicionFactura(idFactura) {
+  let main = document.getElementById("App");
+  //console.log("ID de factura a editar:", idFactura);
+  // Limpia el contenedor principal usando tu helper global
+  removeALLChilds(main);
+
+  // Instancia el componente espejo de edición
+  const frmEditar = document.createElement("editar-factura");
+  frmEditar.setAttribute("container", "#App");
+  main.appendChild(frmEditar);
+
+  // Función interna recursiva para esperar que el cliente de Auth y el Namespace estén listos
+  function intentarCargar(intentos = 0) {
+    const supabaseListo = typeof supabaseClient !== "undefined";
+    const namespaceListo =
+      typeof nsEditarFactura !== "undefined" &&
+      typeof nsEditarFactura.cargarDatosFactura === "function";
+
+    if (supabaseListo && namespaceListo) {
+      nsEditarFactura.cargarDatosFactura(idFactura);
+    } else if (intentos < 15) {
+      // Reintenta cada 60ms (dando hasta 900ms totales para inicializarse tras cambios de hash)
+      setTimeout(() => intentarCargar(intentos + 1), 60);
+    } else {
+      console.error(
+        "No se pudo cargar la factura: Las dependencias de Supabase o los scripts no iniciaron a tiempo.",
+      );
+    }
+  }
+
+  // Iniciamos la verificación segura
+  intentarCargar();
+}
+
 /*******************************************************************************/
 
 function getHome() {
@@ -13,12 +89,25 @@ function getHome() {
   removeALLChilds(main);
   // 🔥 SIEMPRE leer la versión más reciente
   versionApp = localStorage.getItem("app_version") || "";
-  const componente = document.createElement("login-component");
+  const componente = document.createElement("bienvenida-component");
   componente.setAttribute("container", "#App");
   componente.versionApp = versionApp;
+
   main.appendChild(componente);
 }
-/***************************************************************************************/
+
+function acercade() {
+  let main = document.getElementById("App");
+  removeALLChilds(main);
+  const componente = document.createElement("acercade-component");
+  componente.setAttribute("container", "#App"); // <-- aquí pasas el parámetro
+  componente.versionApp = versionApp; // <-- Aquí se pasa la versión antes de renderizar
+  componente.fecInicial = "19/01/2026"; // <-- Aquí se pasa la fecha inicial antes de renderizar
+  componente.fecFinal = "19/01/2027"; // <-- Aquí se pasa la fecha final antes de renderizar
+  main.appendChild(componente);
+  /******************************************************** */
+}
+
 function crearLoader() {
   eliminarLoader();
   let containerloader = document.createElement("div");
