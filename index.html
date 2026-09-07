@@ -1,185 +1,324 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - CoreUI Admin</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión - EcoLNK</title>
     <!-- Bootstrap 5.3 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+
     <style>
-        :root {
-            --bg-body: #f3f4f7;
-            --brand-dark: #212631;
-            --brand-primary: #5856d6;
-            --brand-primary-hover: #4b49b6;
-        }
+      :root {
+        --bg-body: #f3f4f7;
+        --brand-dark: #212631;
+        --brand-primary: #5856d6;
+        --brand-primary-hover: #4b49b6;
+      }
 
-        body {
-            background-color: var(--bg-body);
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-            font-size: 0.875rem;
-        }
+      body {
+        background-color: var(--bg-body);
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        font-size: 0.875rem;
+      }
 
-        .login-card {
-            border: 1px solid #d8dbe0;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
-        }
+      .login-card {
+        border: 1px solid #d8dbe0;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+      }
 
-        .btn-primary-custom {
-            background-color: var(--brand-primary);
-            border-color: var(--brand-primary);
-            color: #fff;
-            font-weight: 500;
-        }
+      .btn-primary-custom {
+        background-color: var(--brand-primary);
+        border-color: var(--brand-primary);
+        color: #fff;
+        font-weight: 500;
+      }
 
-        .btn-primary-custom:hover {
-            background-color: var(--brand-primary-hover);
-            border-color: var(--brand-primary-hover);
-            color: #fff;
-        }
+      .btn-primary-custom:hover {
+        background-color: var(--brand-primary-hover);
+        border-color: var(--brand-primary-hover);
+        color: #fff;
+      }
 
-        /* Columna derecha oscura estilo CoreUI */
+      .card-brand-side {
+        background-color: var(--brand-dark);
+        color: #fff;
+      }
+
+      .input-group-text {
+        background-color: #fff;
+        color: #768192;
+        border-right: none;
+      }
+
+      .form-control {
+        border-left: none;
+      }
+
+      .form-control:focus {
+        box-shadow: none;
+        border-color: #dee2e6;
+      }
+
+      .input-group:focus-within .input-group-text,
+      .input-group:focus-within .form-control {
+        border-color: var(--brand-primary);
+      }
+
+      .btn-toggle-pwd {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-left: none;
+        color: #768192;
+      }
+
+      /* Ajustes específicos para pantallas móviles */
+      @media (max-width: 767.98px) {
         .card-brand-side {
-            background-color: var(--brand-dark);
-            color: #fff;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 0 0 0.75rem 0.75rem;
         }
-
-        .input-group-text {
-            background-color: #fff;
-            color: #768192;
-            border-right: none;
-        }
-
-        .form-control {
-            border-left: none;
-        }
-
-        .form-control:focus {
-            box-shadow: none;
-            border-color: #dee2e6;
-        }
-
-        .input-group:focus-within .input-group-text,
-        .input-group:focus-within .form-control {
-            border-color: var(--brand-primary);
-        }
-
-        .btn-toggle-pwd {
-            background: #fff;
-            border: 1px solid #dee2e6;
-            border-left: none;
-            color: #768192;
-        }
+      }
     </style>
-</head>
-<body>
-
-<div class="min-vh-100 d-flex align-items-center justify-content-center p-3 p-md-4">
-    <div class="container" style="max-width: 900px;">
+  </head>
+  <body>
+    <div
+      class="min-vh-100 d-flex align-items-center justify-content-center p-2 p-sm-3 p-md-4"
+    >
+      <div class="container p-0" style="max-width: 880px">
         <div class="card login-card border-0">
-            <div class="row g-0">
-                
-                <!-- COLUMNA IZQUIERDA: Formulario de Login -->
-                <div class="col-12 col-md-7 bg-white p-4 p-lg-5">
-                    
-                    <!-- Branding / Logo -->
-                    <div class="d-flex align-items-center mb-4">
-                        <i class="bi bi-hexagon-fill text-primary me-2 fs-3"></i>
-                        <span class="fs-4 fw-bold">CORE<span class="text-primary">UI</span></span>
-                    </div>
+          <div class="row g-0">
+            <!-- COLUMNA IZQUIERDA: Formulario de Login -->
+            <div class="col-12 col-md-7 bg-white p-4 p-lg-5">
+              <!-- Branding / Logo EcoLNK -->
+              <div class="d-flex align-items-center mb-4">
+                <img
+                  src="assets/logo.png"
+                  alt="EcoLNK Logo"
+                  height="38"
+                  class="me-2"
+                  style="object-fit: contain"
+                />
+                <span class="fs-4 fw-bold text-dark"
+                  >Eco<span class="text-primary">LNK</span></span
+                >
+              </div>
 
-                    <h3 class="fw-bold mb-1">Iniciar Sesión</h3>
-                    <p class="text-muted mb-4">Ingresa con las credenciales de tu cuenta</p>
+              <h3 class="fw-bold mb-1">Iniciar Sesión</h3>
+              <p class="text-muted mb-4">
+                Ingresa con las credenciales de tu cuenta
+              </p>
 
-                    <form action="dashboard.html" method="GET">
-                        
-                        <!-- Campo Usuario / Email -->
-                        <div class="mb-3">
-                            <label class="form-label fw-medium text-secondary">Usuario o Correo</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                <input type="text" class="form-control" placeholder="admin@ejemplo.com" required>
-                            </div>
-                        </div>
+              <!-- Alerta de Error (Oculta por defecto) -->
+              <div
+                id="loginAlert"
+                class="alert alert-danger d-none py-2 px-3 small"
+                role="alert"
+              >
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span id="loginAlertText"></span>
+              </div>
 
-                        <!-- Campo Contraseña -->
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <label class="form-label fw-medium text-secondary">Contraseña</label>
-                                <a href="#" class="small text-decoration-none text-primary">¿Olvidaste tu contraseña?</a>
-                            </div>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                <input type="password" id="passwordInput" class="form-control" placeholder="••••••••" required>
-                                <button class="btn btn-toggle-pwd" type="button" id="togglePassword">
-                                    <i class="bi bi-eye" id="toggleIcon"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Recordar Sesión -->
-                        <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" id="rememberMe">
-                            <label class="form-check-label text-muted" for="rememberMe">
-                                Mantener sesión iniciada
-                            </label>
-                        </div>
-
-                        <!-- Botón de Ingreso -->
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary-custom py-2">
-                                <i class="bi bi-box-arrow-in-right me-2"></i> Acceder
-                            </button>
-                        </div>
-                    </form>
+              <!-- Formulario sin action ni method para control por JS -->
+              <form id="loginForm" novalidate>
+                <!-- Campo Usuario / Email -->
+                <div class="mb-3">
+                  <label class="form-label fw-medium text-secondary"
+                    >Usuario o Correo</label
+                  >
+                  <div class="input-group">
+                    <span class="input-group-text"
+                      ><i class="bi bi-person"></i
+                    ></span>
+                    <input
+                      type="text"
+                      id="userInput"
+                      class="form-control"
+                      placeholder="admin@ecolnk.com"
+                      required
+                    />
+                  </div>
                 </div>
 
-                <!-- COLUMNA DERECHA: Banner Informativo -->
-                <div class="col-12 col-md-5 card-brand-side p-4 p-lg-5 d-flex flex-column justify-content-center text-center">
-                    <div>
-                        <h3 class="fw-bold mb-3">¿Eres nuevo aquí?</h3>
-                        <p class="text-white-50 mb-4 fs-6">
-                            Regístrate para obtener acceso al panel de administración completo, métricas en tiempo real y más herramientas.
-                        </p>
-                        <a href="#" class="btn btn-outline-light px-4 py-2 fw-medium">
-                            Crear una cuenta
-                        </a>
-                    </div>
+                <!-- Campo Contraseña -->
+                <div class="mb-3">
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                    <label class="form-label fw-medium text-secondary"
+                      >Contraseña</label
+                    >
+                    <a href="#" class="small text-decoration-none text-primary"
+                      >¿Olvidaste tu contraseña?</a
+                    >
+                  </div>
+                  <div class="input-group">
+                    <span class="input-group-text"
+                      ><i class="bi bi-lock"></i
+                    ></span>
+                    <input
+                      type="password"
+                      id="passwordInput"
+                      class="form-control"
+                      placeholder="••••••••"
+                      required
+                    />
+                    <button
+                      class="btn btn-toggle-pwd"
+                      type="button"
+                      id="togglePassword"
+                    >
+                      <i class="bi bi-eye" id="toggleIcon"></i>
+                    </button>
+                  </div>
                 </div>
 
+                <!-- Recordar Sesión -->
+                <div class="form-check mb-4">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="rememberMe"
+                  />
+                  <label class="form-check-label text-muted" for="rememberMe">
+                    Mantener sesión iniciada
+                  </label>
+                </div>
+
+                <!-- Botón de Ingreso -->
+                <div class="d-grid">
+                  <button
+                    type="submit"
+                    id="btnSubmit"
+                    class="btn btn-primary-custom py-2"
+                  >
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Acceder
+                  </button>
+                </div>
+              </form>
             </div>
+
+            <!-- COLUMNA DERECHA: Eslogan de EcoLNK -->
+            <div
+              class="col-12 col-md-5 card-brand-side p-4 p-lg-5 d-flex flex-column justify-content-center text-center"
+            >
+              <div>
+                <div class="mb-3">
+                  <i class="bi bi-file-earmark-check fs-1 text-primary"></i>
+                </div>
+                <h4 class="fw-bold mb-3">Firmas Digitales, Cero Papel</h4>
+                <p class="text-white-50 mb-0 fs-6">
+                  EcoLNK nace de la necesidad de transformar procesos mediante
+                  firmas digitales para eliminar el gasto innecesario de papel y
+                  tinta, impulsando una gestión sostenible y eficiente.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-        
+
         <!-- Footer simple -->
-        <div class="text-center mt-4 text-muted small">
-            &copy; 2026 Admin Dashboard Panel. Todos los derechos reservados.
+        <div class="text-center mt-3 text-muted small">
+          &copy; 2026 EcoLNK. Todos los derechos reservados.
         </div>
+      </div>
     </div>
-</div>
 
-<!-- Bootstrap JS Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Script para Mostrar/Ocultar Contraseña -->
-<script>
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('passwordInput');
-    const toggleIcon = document.getElementById('toggleIcon');
+    <script>
+      // 1. Mostrar/Ocultar contraseña
+      const togglePassword = document.getElementById("togglePassword");
+      const passwordInput = document.getElementById("passwordInput");
+      const toggleIcon = document.getElementById("toggleIcon");
 
-    togglePassword.addEventListener('click', function () {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        
-        // Cambiar ícono
-        toggleIcon.classList.toggle('bi-eye');
-        toggleIcon.classList.toggle('bi-eye-slash');
-    });
-</script>
+      togglePassword.addEventListener("click", function () {
+        const type =
+          passwordInput.getAttribute("type") === "password"
+            ? "text"
+            : "password";
+        passwordInput.setAttribute("type", type);
 
-</body>
+        toggleIcon.classList.toggle("bi-eye");
+        toggleIcon.classList.toggle("bi-eye-slash");
+      });
+
+      // 2. Función que simula la validación con el servidor
+      function validarUsuario(usuario, password) {
+        return new Promise((resolve, reject) => {
+          // Simula un tiempo de espera de red de 1.2 segundos
+          setTimeout(() => {
+            // Ejemplo de validación: Acepta cualquier dato mientras no estén vacíos
+            if (usuario.trim() !== "" && password.trim() !== "") {
+              resolve({
+                success: true,
+                message: "Acceso concedido",
+                user: usuario,
+              });
+            } else {
+              reject({
+                success: false,
+                message: "Por favor ingresa usuario y contraseña válidos.",
+              });
+            }
+          }, 1200);
+        });
+      }
+
+      // 3. Manejo del Submit del formulario
+      const loginForm = document.getElementById("loginForm");
+      const btnSubmit = document.getElementById("btnSubmit");
+      const loginAlert = document.getElementById("loginAlert");
+      const loginAlertText = document.getElementById("loginAlertText");
+
+      loginForm.addEventListener("submit", async function (e) {
+        e.preventDefault(); // Previene la recarga del navegador
+
+        const usuario = document.getElementById("userInput").value;
+        const password = passwordInput.value;
+
+        // Ocultar alerta previa
+        loginAlert.classList.add("d-none");
+
+        // Cambiar estado del botón (Spinner)
+        btnSubmit.disabled = true;
+        const originalBtnContent = btnSubmit.innerHTML;
+        btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span> Validando...`;
+
+        try {
+          // Llamada a la función de validación
+          const respuesta = await validarUsuario(usuario, password);
+
+          if (respuesta.success) {
+            // Redirección directa a views/dashboard.html
+            window.location.href = "view/dashboard.html";
+          }
+        } catch (error) {
+          // Mostrar mensaje de error si falla
+          loginAlertText.textContent =
+            error.message || "Error al iniciar sesión.";
+          loginAlert.classList.remove("d-none");
+
+          // Restaurar botón
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = originalBtnContent;
+        }
+      });
+    </script>
+  </body>
 </html>
