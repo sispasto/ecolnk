@@ -85,15 +85,8 @@ function gestionarEdicionFactura(idFactura) {
 /*******************************************************************************/
 
 function getHome() {
-  let main = document.getElementById("App");
-  removeALLChilds(main);
-  // 🔥 SIEMPRE leer la versión más reciente
-  versionApp = localStorage.getItem("app_version") || "";
-  const componente = document.createElement("bienvenida-component");
-  componente.setAttribute("container", "#App");
-  componente.versionApp = versionApp;
-
-  main.appendChild(componente);
+  const versionApp = localStorage.getItem("app_version") || "2.5";
+  cargarVista("bienvenida", { versionApp });
 }
 
 function acercade() {
@@ -211,6 +204,49 @@ function mostrarBotonActualizacion() {
     }
   };
 }
+
+//################################################################################################################//
+let moduloActivo = null;
+
+async function cargarVista(nombreVista, props = {}) {
+  const container = document.getElementById("App");
+
+  try {
+    // 1. Limpieza de eventos del módulo anterior (si implementó destroy)
+    if (moduloActivo && typeof moduloActivo.destroy === "function") {
+      moduloActivo.destroy(container);
+    }
+    moduloActivo = null;
+
+    // 2. Cargar el HTML desde la carpeta /view/
+    const responseHtml = await fetch(`view/${nombreVista}.html`);
+    if (!responseHtml.ok)
+      throw new Error(`No se pudo cargar view/${nombreVista}.html`);
+
+    container.innerHTML = await responseHtml.text();
+
+    // 3. Importar dinámicamente el JS desde la carpeta /componentes/
+    try {
+      const modulo = await import(
+        `../componentes/${nombreVista}.js?v=${Date.now()}`
+      );
+
+      if (modulo && typeof modulo.init === "function") {
+        modulo.init(container, props);
+        moduloActivo = modulo;
+      }
+    } catch (errJs) {
+      // Si el componente no requiere lógica JS, se ignora silenciosamente
+      console.log(
+        `El componente componentes/${nombreVista}.js no existe o es estático.`,
+      );
+    }
+  } catch (error) {
+    console.error("Error al cargar la vista:", error);
+    container.innerHTML = `<div class="alert alert-danger p-3">Error al cargar la vista.</div>`;
+  }
+}
+//################################################################################################################//
 
 /* =========================
    INIT
