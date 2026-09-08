@@ -4,7 +4,7 @@ export function init(container, props) {
   if (props && props.versionApp) {
     const versionLabel = container.querySelector("#version-label");
     if (versionLabel) {
-      versionLabel.textContent = `Tally v${props.versionApp}`;
+      versionLabel.textContent = `EcoLNK v${props.versionApp}`;
     }
   }
 }

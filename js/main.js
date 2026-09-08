@@ -151,7 +151,7 @@ export function inicializarRouter() {
 
 // Función expuesta para volver al home desde la navegación del Dashboard
 export function getHome() {
-  const currentVersion = localStorage.getItem("app_version") || "2.5";
+  const currentVersion = localStorage.getItem("app_version") || "1.0";
   cargarSubVista("bienvenida", { versionApp: currentVersion });
 }
 
