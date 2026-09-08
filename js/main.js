@@ -83,7 +83,7 @@ export async function cargarRaiz(nombreVista, props = {}) {
 
     try {
       const modulo = await import(
-        `../componentes/${nombreVista}.js?v=${Date.now()}`
+        `../components/${nombreVista}.js?v=${Date.now()}`
       );
       if (modulo && typeof modulo.init === "function") {
         modulo.init(rootContainer, props);
@@ -91,7 +91,7 @@ export async function cargarRaiz(nombreVista, props = {}) {
       }
     } catch (errJs) {
       console.log(
-        `Componente componentes/${nombreVista}.js es estático o no existe.`,
+        `Componente components/${nombreVista}.js es estático o no existe.`,
       );
     }
   } catch (error) {
@@ -121,7 +121,7 @@ export async function cargarSubVista(nombreVista, props = {}) {
 
     try {
       const modulo = await import(
-        `../componentes/${nombreVista}.js?v=${Date.now()}`
+        `../components/${nombreVista}.js?v=${Date.now()}`
       );
       if (modulo && typeof modulo.init === "function") {
         modulo.init(container, props);
@@ -129,7 +129,7 @@ export async function cargarSubVista(nombreVista, props = {}) {
       }
     } catch (errJs) {
       console.log(
-        `Subvista componentes/${nombreVista}.js es estática o no existe.`,
+        `Subvista components/${nombreVista}.js es estática o no existe.`,
       );
     }
   } catch (error) {
