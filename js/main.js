@@ -1,27 +1,24 @@
+// js/main.js
+import { supabaseClient } from "./config.js";
+
+/* ==========================================
+   ESTADO GLOBAL Y SERVICE WORKER
+========================================== */
 const templateCache = {};
-var arrayGlobal = []; //array de promotores
-var folderPathIMG = ""; //variable que guarda id de carpeta donde se guardan las imagenes
-var versionApp = localStorage.getItem("app_version") || ""; //La version se debe cambiar en service-worker.js y main.js
-let swRegistration = null; // 🔥 referencia global
+var arrayGlobal = [];
+var folderPathIMG = "";
+var versionApp = localStorage.getItem("app_version") || "";
+let swRegistration = null;
 let intervalSW = null;
 let newVersionAvailable = null;
 
-function gestionarCotizaciones() {
-  let main = document.getElementById("App");
-  removeALLChilds(main);
-  const frmCotizacion = document.createElement("crear-cotizacion");
-  frmCotizacion.setAttribute("container", "#App"); // <-- aquí pasas el parámetro
-  main.appendChild(frmCotizacion);
-}
+let moduloRaizActivo = null;
+let moduloSubVistaActivo = null;
 
-/*******************************************************************************/
-
-function getHome() {
-  const versionApp = localStorage.getItem("app_version") || "2.5";
-  cargarVista("bienvenida", { versionApp });
-}
-
-function crearLoader() {
+/* ==========================================
+   UTILIDADES DE UI GLOBALES
+========================================== */
+export function crearLoader() {
   eliminarLoader();
   let containerloader = document.createElement("div");
   containerloader.id = "containerloader";
@@ -35,12 +32,12 @@ function crearLoader() {
   document.body.appendChild(containerloader);
 }
 
-function eliminarLoader() {
+export function eliminarLoader() {
   let loader = document.getElementById("containerloader");
   if (loader) loader.remove();
 }
 
-function cerrarModalesActivos() {
+export function cerrarModalesActivos() {
   const allModals = document.querySelectorAll(".modal.show");
   allModals.forEach((modal) => {
     const instance = bootstrap.Modal.getInstance(modal);
@@ -48,21 +45,12 @@ function cerrarModalesActivos() {
   });
 }
 
-function removeALLChilds(parentNode) {
-  while (parentNode.firstChild) {
-    parentNode.removeChild(parentNode.firstChild);
-  }
-}
-
-function alertSMS(texto) {
+export function alertSMS(texto) {
   const myToast = document.getElementById("liveToast");
+  if (!myToast) return;
   const smsToast = myToast.querySelector(".toast-body");
 
-  // 1. Insertar el texto
   smsToast.innerHTML = texto;
-
-  // 2. Forzar que el contenedor padre esté por encima de todo (z-index)
-  // Buscamos el div que tiene las clases 'position-fixed bottom-0 end-0'
   const container = myToast.closest(".position-fixed");
   if (container) {
     container.style.zIndex = "1090";
@@ -72,9 +60,104 @@ function alertSMS(texto) {
   toast.show();
 }
 
-/* =========================
-   AUTO UPDATE SW
-========================= */
+/* ==========================================
+   SISTEMA DE RUTAS Y CARGA DINÁMICA
+========================================== */
+
+// 1. Carga el nivel superior (#app-root): 'login' o 'dashboard'
+export async function cargarRaiz(nombreVista, props = {}) {
+  const rootContainer = document.getElementById("app-root");
+  if (!rootContainer) return;
+
+  try {
+    if (moduloRaizActivo && typeof moduloRaizActivo.destroy === "function") {
+      moduloRaizActivo.destroy(rootContainer);
+    }
+    moduloRaizActivo = null;
+
+    const responseHtml = await fetch(`views/${nombreVista}.html`);
+    if (!responseHtml.ok)
+      throw new Error(`No se pudo cargar views/${nombreVista}.html`);
+
+    rootContainer.innerHTML = await responseHtml.text();
+
+    try {
+      const modulo = await import(
+        `../componentes/${nombreVista}.js?v=${Date.now()}`
+      );
+      if (modulo && typeof modulo.init === "function") {
+        modulo.init(rootContainer, props);
+        moduloRaizActivo = modulo;
+      }
+    } catch (errJs) {
+      console.log(
+        `Componente componentes/${nombreVista}.js es estático o no existe.`,
+      );
+    }
+  } catch (error) {
+    console.error("Error al cargar la raíz:", error);
+  }
+}
+
+// 2. Carga vistas internas del menú dentro del dashboard (<main id="App">)
+export async function cargarSubVista(nombreVista, props = {}) {
+  const container = document.getElementById("App");
+  if (!container) return;
+
+  try {
+    if (
+      moduloSubVistaActivo &&
+      typeof moduloSubVistaActivo.destroy === "function"
+    ) {
+      moduloSubVistaActivo.destroy(container);
+    }
+    moduloSubVistaActivo = null;
+
+    const responseHtml = await fetch(`views/${nombreVista}.html`);
+    if (!responseHtml.ok)
+      throw new Error(`No se pudo cargar views/${nombreVista}.html`);
+
+    container.innerHTML = await responseHtml.text();
+
+    try {
+      const modulo = await import(
+        `../componentes/${nombreVista}.js?v=${Date.now()}`
+      );
+      if (modulo && typeof modulo.init === "function") {
+        modulo.init(container, props);
+        moduloSubVistaActivo = modulo;
+      }
+    } catch (errJs) {
+      console.log(
+        `Subvista componentes/${nombreVista}.js es estática o no existe.`,
+      );
+    }
+  } catch (error) {
+    console.error("Error al cargar la subvista:", error);
+    container.innerHTML = `<div class="alert alert-danger p-3">Error al cargar la vista.</div>`;
+  }
+}
+
+// 3. Evalúa si el usuario está autenticado
+export function inicializarRouter() {
+  const userProfile = sessionStorage.getItem("ecolnk_user_profile");
+
+  if (!userProfile) {
+    cargarRaiz("login");
+  } else {
+    cargarRaiz("dashboard");
+  }
+}
+
+// Función expuesta para volver al home desde la navegación del Dashboard
+export function getHome() {
+  const currentVersion = localStorage.getItem("app_version") || "2.5";
+  cargarSubVista("bienvenida", { versionApp: currentVersion });
+}
+
+/* ==========================================
+   AUTO UPDATE SERVICE WORKER
+========================================== */
 function iniciarAutoUpdateSW() {
   if (intervalSW) return;
 
@@ -83,19 +166,15 @@ function iniciarAutoUpdateSW() {
       console.log("🔄 Buscando actualización del SW...");
       swRegistration.update();
     }
-  }, 300000); // detecta versiones cada 30 minutos (1800000 ms) 30segundos 300000
+  }, 300000);
 }
 
-/* =========================
-   BOTÓN ACTUALIZACIÓN
-========================= */
 function mostrarBotonActualizacion() {
   let btn = document.getElementById("btn-update-app");
 
   if (!btn) {
     btn = document.createElement("button");
     btn.id = "btn-update-app";
-
     btn.style.position = "fixed";
     btn.style.bottom = "20px";
     btn.style.right = "20px";
@@ -115,108 +194,50 @@ function mostrarBotonActualizacion() {
 
   btn.onclick = () => {
     if (swRegistration && swRegistration.waiting) {
-      // 🔥 AQUÍ recién aceptas la nueva versión
       if (newVersionAvailable) {
         localStorage.setItem("app_version", newVersionAvailable);
       }
-
       swRegistration.waiting.postMessage({ action: "SKIP_WAITING" });
     }
   };
 }
 
-//################################################################################################################//
-let moduloActivo = null;
-
-async function cargarVista(nombreVista, props = {}) {
-  const container = document.getElementById("App");
-
-  try {
-    // 1. Limpieza de eventos del módulo anterior (si implementó destroy)
-    if (moduloActivo && typeof moduloActivo.destroy === "function") {
-      moduloActivo.destroy(container);
-    }
-    moduloActivo = null;
-
-    // 2. Cargar el HTML desde la carpeta /view/
-    const responseHtml = await fetch(`view/${nombreVista}.html`);
-    if (!responseHtml.ok)
-      throw new Error(`No se pudo cargar view/${nombreVista}.html`);
-
-    container.innerHTML = await responseHtml.text();
-
-    // 3. Importar dinámicamente el JS desde la carpeta /componentes/
-    try {
-      const modulo = await import(
-        `../componentes/${nombreVista}.js?v=${Date.now()}`
-      );
-
-      if (modulo && typeof modulo.init === "function") {
-        modulo.init(container, props);
-        moduloActivo = modulo;
-      }
-    } catch (errJs) {
-      // Si el componente no requiere lógica JS, se ignora silenciosamente
-      console.log(
-        `El componente componentes/${nombreVista}.js no existe o es estático.`,
-      );
-    }
-  } catch (error) {
-    console.error("Error al cargar la vista:", error);
-    container.innerHTML = `<div class="alert alert-danger p-3">Error al cargar la vista.</div>`;
-  }
-}
-//################################################################################################################//
-
-/* =========================
-   INIT
-========================= */
+/* ==========================================
+   INICIALIZACIÓN DE LA APLICACIÓN
+========================================== */
 document.addEventListener("DOMContentLoaded", async function () {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker
       .register("./service-worker.js", {
-        // Al usar "./" buscamos en la carpeta actual, sin importar el dominio
         scope: "./",
         updateViaCache: "none",
       })
       .then((reg) => {
         swRegistration = reg;
-
-        // 🔥 iniciar revisión automática
         iniciarAutoUpdateSW();
 
-        // 🔥 SIEMPRE obtener versión (incluye primera carga)
-        // En lugar de llamar a ready inmediatamente, espera a que el SW esté activo
         navigator.serviceWorker.ready.then((regReady) => {
-          // Solo enviamos el mensaje si realmente hay un SW controlando la página
           if (regReady.active && navigator.serviceWorker.controller) {
             regReady.active.postMessage("GET_VERSION");
           }
         });
 
-        // 🔥 si ya hay una versión en espera
         if (reg.waiting && navigator.serviceWorker.controller) {
-          console.log("SW ya estaba esperando");
           mostrarBotonActualizacion();
         }
 
-        // 🔥 detectar nueva versión
         reg.onupdatefound = () => {
           const newSW = reg.installing;
           if (!newSW) return;
 
           newSW.onstatechange = () => {
-            if (newSW.state === "installed") {
-              // Solo si ya hay una app corriendo (no primera instalación)
-              if (navigator.serviceWorker.controller) {
-                console.log("Nueva versión disponible");
-
-                // 🔥 pedir versión del NUEVO SW
-                newSW.postMessage("GET_VERSION");
-
-                if (reg.waiting) {
-                  mostrarBotonActualizacion();
-                }
+            if (
+              newSW.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
+              newSW.postMessage("GET_VERSION");
+              if (reg.waiting) {
+                mostrarBotonActualizacion();
               }
             }
           };
@@ -224,20 +245,15 @@ document.addEventListener("DOMContentLoaded", async function () {
       })
       .catch((error) => console.error("Error al registrar el SW:", error));
 
-    // 🔥 recibir versión
     navigator.serviceWorker.addEventListener("message", (event) => {
       if (event.data.type === "VERSION") {
         if (swRegistration && swRegistration.waiting) {
-          // 🔥 nueva versión (NO aplicar aún)
           newVersionAvailable = event.data.version;
-          console.log("Nueva versión detectada:", newVersionAvailable);
           mostrarBotonActualizacion();
         } else {
-          // 🔥 versión actual activa
           versionApp = event.data.version;
           localStorage.setItem("app_version", versionApp);
 
-          // 🔥 actualizar UI si estás en home
           const label = document.getElementById("version-label");
           if (label) {
             label.textContent = `Tally v${versionApp}`;
@@ -246,21 +262,17 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     });
 
-    // 🔥 recargar SOLO cuando usuario acepta actualización
     navigator.serviceWorker.addEventListener("controllerchange", () => {
       window.location.reload();
     });
 
-    // 🔥 revisar actualización al volver a la pestaña
     document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") {
-        if (swRegistration) {
-          console.log("Validando actualizaciones...");
-          swRegistration.update();
-        }
+      if (document.visibilityState === "visible" && swRegistration) {
+        swRegistration.update();
       }
     });
   }
 
-  getHome();
+  // Carga inicial: decide si mostrar Login o Dashboard
+  inicializarRouter();
 });
