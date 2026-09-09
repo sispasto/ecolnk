@@ -77,7 +77,9 @@
   }
 </style>
 
+<!-- Componente Reactivo de Login -->
 <div
+  x-data="loginComponent()"
   class="min-vh-100 d-flex align-items-center justify-content-center p-2 p-sm-3 p-md-4"
 >
   <div class="container p-0" style="max-width: 880px">
@@ -103,17 +105,19 @@
             Ingresa con las credenciales de tu cuenta
           </p>
 
-          <!-- Alerta de Error -->
+          <!-- Alerta de Error (Reactiva con x-show y x-text) -->
           <div
-            id="loginAlert"
-            class="alert alert-danger d-none py-2 px-3 small"
+            x-show="errorMessage"
+            x-transition
+            class="alert alert-danger py-2 px-3 small"
             role="alert"
+            style="display: none"
           >
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            <span id="loginAlertText"></span>
+            <span x-text="errorMessage"></span>
           </div>
 
-          <form id="loginForm" novalidate>
+          <form @submit.prevent="handleSubmit">
             <div class="mb-3">
               <label class="form-label fw-medium text-secondary"
                 >Correo Electrónico</label
@@ -124,7 +128,7 @@
                 ></span>
                 <input
                   type="email"
-                  id="userInput"
+                  x-model="email"
                   class="form-control"
                   placeholder="ejemplo@envia.co"
                   required
@@ -144,8 +148,8 @@
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-lock"></i></span>
                 <input
-                  type="password"
-                  id="passwordInput"
+                  :type="showPassword ? 'text' : 'password'"
+                  x-model="password"
                   class="form-control"
                   placeholder="••••••••"
                   required
@@ -153,15 +157,22 @@
                 <button
                   class="btn btn-toggle-pwd"
                   type="button"
-                  id="togglePassword"
+                  @click="showPassword = !showPassword"
                 >
-                  <i class="bi bi-eye" id="toggleIcon"></i>
+                  <i
+                    :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"
+                  ></i>
                 </button>
               </div>
             </div>
 
             <div class="form-check mb-4">
-              <input class="form-check-input" type="checkbox" id="rememberMe" />
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="rememberMe"
+                x-model="rememberMe"
+              />
               <label class="form-check-label text-muted" for="rememberMe">
                 Mantener sesión activa sin límite de inactividad
               </label>
@@ -170,10 +181,18 @@
             <div class="d-grid gap-2">
               <button
                 type="submit"
-                id="btnSubmit"
                 class="btn btn-primary-custom py-2"
+                :disabled="loading"
               >
-                <i class="bi bi-box-arrow-in-right me-2"></i> Acceder
+                <!-- Spinner condicional -->
+                <span
+                  x-show="loading"
+                  class="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                <i x-show="!loading" class="bi bi-box-arrow-in-right me-2"></i>
+                <span x-text="loading ? 'Accediendo...' : 'Acceder'"></span>
               </button>
             </div>
           </form>
@@ -203,3 +222,40 @@
     </div>
   </div>
 </div>
+
+<!-- Lógica encapsulada del componente para Alpine -->
+<script>
+  function loginComponent() {
+    return {
+      email: "",
+      password: "",
+      rememberMe: false,
+      showPassword: false,
+      loading: false,
+      errorMessage: "",
+
+      async handleSubmit() {
+        this.errorMessage = "";
+        this.loading = true;
+
+        try {
+          // Conexión con Supabase o tu función de autenticación en main.js
+          const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: this.email,
+            password: this.password,
+          });
+
+          if (error) throw error;
+
+          // Redirección al dashboard o reinicio de estado
+          window.location.reload();
+        } catch (err) {
+          this.errorMessage =
+            err.message || "Error al iniciar sesión. Verifica tus datos.";
+        } finally {
+          this.loading = false;
+        }
+      },
+    };
+  }
+</script>

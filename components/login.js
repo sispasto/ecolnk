@@ -6,92 +6,78 @@ import {
   SUPABASE_ANON_KEY,
 } from "../js/config.js";
 
-export function init(container) {
-  // Ya NO reinicializas Supabase aquí, usas la instancia importada
+// Registramos el objeto del componente directamente en Alpine
+window.loginComponent = function () {
+  return {
+    email: "",
+    password: "",
+    rememberMe: false,
+    showPassword: false,
+    loading: false,
+    errorMessage: "",
 
-  const togglePassword = container.querySelector("#togglePassword");
-  const passwordInput = container.querySelector("#passwordInput");
-  const toggleIcon = container.querySelector("#toggleIcon");
-  const loginForm = container.querySelector("#loginForm");
-  const btnSubmit = container.querySelector("#btnSubmit");
-  const loginAlert = container.querySelector("#loginAlert");
-  const loginAlertText = container.querySelector("#loginAlertText");
-  const rememberMe = container.querySelector("#rememberMe");
+    async handleSubmit() {
+      this.errorMessage = "";
+      this.loading = true;
 
-  togglePassword.addEventListener("click", () => {
-    const isPassword = passwordInput.getAttribute("type") === "password";
-    passwordInput.setAttribute("type", isPassword ? "text" : "password");
-    toggleIcon.classList.toggle("bi-eye");
-    toggleIcon.classList.toggle("bi-eye-slash");
-  });
+      try {
+        // 1. Autenticación con Supabase
+        const { data: authData, error: authError } =
+          await supabaseClient.auth.signInWithPassword({
+            email: this.email,
+            password: this.password,
+          });
 
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+        if (authError || !authData.session) {
+          throw new Error("Usuario o contraseña incorrectos.");
+        }
 
-    const email = container.querySelector("#userInput").value.trim();
-    const password = passwordInput.value.trim();
-
-    if (!email || !password) {
-      loginAlertText.textContent = "Por favor, ingresa usuario y contraseña.";
-      loginAlert.classList.remove("d-none");
-      return;
-    }
-
-    loginAlert.classList.add("d-none");
-    btnSubmit.disabled = true;
-    const originalBtnContent = btnSubmit.innerHTML;
-    btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span> Autenticando...`;
-
-    try {
-      // Usar directamente el cliente global
-      const { data: authData, error: authError } =
-        await supabaseClient.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-      if (authError || !authData.session) {
-        throw new Error("Usuario o contraseña incorrectos.");
-      }
-
-      const accessToken = authData.session.access_token;
-
-      const response = await fetch(
-        `${SUPABASE_URL}/functions/v1/ecolnk_authuser`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-            apikey: SUPABASE_ANON_KEY,
+        // 2. Obtener perfil desde la Edge Function
+        const response = await fetch(
+          `${SUPABASE_URL}/functions/v1/ecolnk_authuser`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authData.session.access_token}`,
+              apikey: SUPABASE_ANON_KEY,
+            },
+            body: JSON.stringify({ action: "get_profile" }),
           },
-          body: JSON.stringify({ action: "get_profile" }),
-        },
-      );
-
-      const result = await response.json();
-
-      if (!response.ok || result.status !== "success") {
-        throw new Error(
-          result.message || "Error al recuperar perfil del usuario.",
         );
+
+        const result = await response.json();
+
+        if (!response.ok || result.status !== "success") {
+          throw new Error(
+            result.message || "Error al recuperar perfil del usuario.",
+          );
+        }
+
+        // 3. Guardar sesión y configuración
+        sessionStorage.setItem("ecolnk_user_profile", JSON.stringify(result));
+
+        if (!this.rememberMe) {
+          sessionStorage.setItem("inactivity_timer_enabled", "true");
+        } else {
+          sessionStorage.removeItem("inactivity_timer_enabled");
+        }
+
+        // 4. Redirigir al Dashboard
+        cargarRaiz("dashboard");
+      } catch (error) {
+        this.errorMessage = error.message || "Error de autenticación.";
+      } finally {
+        this.loading = false;
       }
+    },
+  };
+};
 
-      sessionStorage.setItem("ecolnk_user_profile", JSON.stringify(result));
+export function init() {
+  // Ya no se requiere manipulación de eventos
+}
 
-      if (!rememberMe.checked) {
-        sessionStorage.setItem("inactivity_timer_enabled", "true");
-      } else {
-        sessionStorage.removeItem("inactivity_timer_enabled");
-      }
-
-      cargarRaiz("dashboard");
-    } catch (error) {
-      loginAlertText.textContent = error.message || "Error de autenticación.";
-      loginAlert.classList.remove("d-none");
-
-      btnSubmit.disabled = false;
-      btnSubmit.innerHTML = originalBtnContent;
-    }
-  });
+export function destroy() {
+  // Alpine destruye la instancia automáticamente al remover la vista
 }
