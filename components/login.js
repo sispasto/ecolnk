@@ -1,4 +1,4 @@
-// componentes/login.js
+// components/login.js
 import { cargarRaiz } from "../js/main.js";
 import {
   supabaseClient,
@@ -6,7 +6,7 @@ import {
   SUPABASE_ANON_KEY,
 } from "../js/config.js";
 
-// Registramos el objeto del componente directamente en Alpine
+// Registro del componente en window para Alpine.js
 window.loginComponent = function () {
   return {
     email: "",
@@ -16,6 +16,12 @@ window.loginComponent = function () {
     loading: false,
     errorMessage: "",
 
+    // Alternar visibilidad de contraseña
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
+    },
+
+    // Manejo del submit del formulario
     async handleSubmit() {
       this.errorMessage = "";
       this.loading = true;
@@ -32,7 +38,7 @@ window.loginComponent = function () {
           throw new Error("Usuario o contraseña incorrectos.");
         }
 
-        // 2. Obtener perfil desde la Edge Function
+        // 2. Consulta de perfil de usuario
         const response = await fetch(
           `${SUPABASE_URL}/functions/v1/ecolnk_authuser`,
           {
@@ -54,7 +60,7 @@ window.loginComponent = function () {
           );
         }
 
-        // 3. Guardar sesión y configuración
+        // 3. Guardado de estado de sesión
         sessionStorage.setItem("ecolnk_user_profile", JSON.stringify(result));
 
         if (!this.rememberMe) {
@@ -63,7 +69,7 @@ window.loginComponent = function () {
           sessionStorage.removeItem("inactivity_timer_enabled");
         }
 
-        // 4. Redirigir al Dashboard
+        // 4. Redirección al Dashboard
         cargarRaiz("dashboard");
       } catch (error) {
         this.errorMessage = error.message || "Error de autenticación.";
@@ -73,11 +79,3 @@ window.loginComponent = function () {
     },
   };
 };
-
-export function init() {
-  // Ya no se requiere manipulación de eventos
-}
-
-export function destroy() {
-  // Alpine destruye la instancia automáticamente al remover la vista
-}
