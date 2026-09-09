@@ -6,7 +6,6 @@ import {
   SUPABASE_ANON_KEY,
 } from "../js/config.js";
 
-// Registro del componente en window para Alpine.js
 window.loginComponent = function () {
   return {
     email: "",
@@ -16,18 +15,11 @@ window.loginComponent = function () {
     loading: false,
     errorMessage: "",
 
-    // Alternar visibilidad de contraseña
-    togglePasswordVisibility() {
-      this.showPassword = !this.showPassword;
-    },
-
-    // Manejo del submit del formulario
     async handleSubmit() {
       this.errorMessage = "";
       this.loading = true;
 
       try {
-        // 1. Autenticación con Supabase
         const { data: authData, error: authError } =
           await supabaseClient.auth.signInWithPassword({
             email: this.email,
@@ -38,7 +30,6 @@ window.loginComponent = function () {
           throw new Error("Usuario o contraseña incorrectos.");
         }
 
-        // 2. Consulta de perfil de usuario
         const response = await fetch(
           `${SUPABASE_URL}/functions/v1/ecolnk_authuser`,
           {
@@ -55,12 +46,9 @@ window.loginComponent = function () {
         const result = await response.json();
 
         if (!response.ok || result.status !== "success") {
-          throw new Error(
-            result.message || "Error al recuperar perfil del usuario.",
-          );
+          throw new Error(result.message || "Error al recuperar perfil.");
         }
 
-        // 3. Guardado de estado de sesión
         sessionStorage.setItem("ecolnk_user_profile", JSON.stringify(result));
 
         if (!this.rememberMe) {
@@ -69,7 +57,6 @@ window.loginComponent = function () {
           sessionStorage.removeItem("inactivity_timer_enabled");
         }
 
-        // 4. Redirección al Dashboard
         cargarRaiz("dashboard");
       } catch (error) {
         this.errorMessage = error.message || "Error de autenticación.";

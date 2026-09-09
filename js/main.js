@@ -59,16 +59,28 @@ export async function cargarRaiz(nombreVista, props = {}) {
     if (!responseHtml.ok)
       throw new Error(`No se pudo cargar views/${nombreVista}.html`);
 
-    rootContainer.innerHTML = await responseHtml.text();
+    const html = await responseHtml.text();
 
+    // 1. Cargar e importar el archivo JS usando la ruta desde la raíz (/)
     try {
-      await import(`../components/${nombreVista}.js?v=${Date.now()}`);
+      await import(`/components/${nombreVista}.js?v=${Date.now()}`);
     } catch (errJs) {
-      console.log(`Vista ${nombreVista} es estática o no requiere JS.`);
+      console.warn(
+        `Vista ${nombreVista} es estática o falló la carga del JS:`,
+        errJs,
+      );
     }
 
+    // 2. Inyectar el HTML SOLO DESPUÉS de haber cargado el script en window
+    rootContainer.innerHTML = html;
+
+    // 3. Inicializar el árbol de Alpine
     if (window.Alpine) {
       window.Alpine.initTree(rootContainer);
+    } else {
+      document.addEventListener("alpine:init", () => {
+        window.Alpine.initTree(rootContainer);
+      });
     }
   } catch (error) {
     console.error("Error al cargar la raíz:", error);
@@ -84,16 +96,22 @@ export async function cargarSubVista(nombreVista, props = {}) {
     if (!responseHtml.ok)
       throw new Error(`No se pudo cargar views/${nombreVista}.html`);
 
-    container.innerHTML = await responseHtml.text();
+    const html = await responseHtml.text();
 
     try {
-      await import(`../components/${nombreVista}.js?v=${Date.now()}`);
+      await import(`/components/${nombreVista}.js?v=${Date.now()}`);
     } catch (errJs) {
-      console.log(`Subvista ${nombreVista} es estática o no requiere JS.`);
+      console.warn(`Subvista ${nombreVista} es estática o no requiere JS.`);
     }
+
+    container.innerHTML = html;
 
     if (window.Alpine) {
       window.Alpine.initTree(container);
+    } else {
+      document.addEventListener("alpine:init", () => {
+        window.Alpine.initTree(container);
+      });
     }
   } catch (error) {
     console.error("Error al cargar la subvista:", error);

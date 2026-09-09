@@ -77,7 +77,6 @@
   }
 </style>
 
-<!-- Componente Reactivo de Login -->
 <div
   x-data="loginComponent()"
   class="min-vh-100 d-flex align-items-center justify-content-center p-2 p-sm-3 p-md-4"
@@ -105,7 +104,7 @@
             Ingresa con las credenciales de tu cuenta
           </p>
 
-          <!-- Alerta de Error (Reactiva con x-show y x-text) -->
+          <!-- Alerta de Error -->
           <div
             x-show="errorMessage"
             x-transition
@@ -117,7 +116,7 @@
             <span x-text="errorMessage"></span>
           </div>
 
-          <form @submit.prevent="handleSubmit">
+          <form @submit.prevent="handleSubmit()">
             <div class="mb-3">
               <label class="form-label fw-medium text-secondary"
                 >Correo Electrónico</label
@@ -222,40 +221,3 @@
     </div>
   </div>
 </div>
-
-<!-- Lógica encapsulada del componente para Alpine -->
-<script>
-  function loginComponent() {
-    return {
-      email: "",
-      password: "",
-      rememberMe: false,
-      showPassword: false,
-      loading: false,
-      errorMessage: "",
-
-      async handleSubmit() {
-        this.errorMessage = "";
-        this.loading = true;
-
-        try {
-          // Conexión con Supabase o tu función de autenticación en main.js
-          const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email: this.email,
-            password: this.password,
-          });
-
-          if (error) throw error;
-
-          // Redirección al dashboard o reinicio de estado
-          window.location.reload();
-        } catch (err) {
-          this.errorMessage =
-            err.message || "Error al iniciar sesión. Verifica tus datos.";
-        } finally {
-          this.loading = false;
-        }
-      },
-    };
-  }
-</script>
