@@ -1,5 +1,5 @@
 // components/dashboard.js
-import { cargarSubVista, getHome } from "../js/main.js";
+import { cargarSubVista, getHome, cargarRaiz } from "../js/main.js";
 import { supabaseClient } from "../js/config.js";
 
 window.dashboardComponent = function () {
@@ -8,7 +8,6 @@ window.dashboardComponent = function () {
     activeVista: "bienvenida",
 
     init() {
-      // Carga automáticamente la subvista inicial al renderizar la estructura
       getHome();
     },
 
@@ -29,7 +28,6 @@ window.dashboardComponent = function () {
       this.activeVista = nombreVista;
       cargarSubVista(nombreVista);
 
-      // Cierra el offcanvas móvil si está desplegado
       if (window.innerWidth < 992) {
         const sidebarEl = document.getElementById("mainSidebar");
         if (sidebarEl) {
@@ -40,15 +38,18 @@ window.dashboardComponent = function () {
     },
 
     async logout() {
-      try {
-        sessionStorage.removeItem("ecolnk_user_profile");
-        sessionStorage.removeItem("inactivity_timer_enabled");
-        await supabaseClient.auth.signOut();
-      } catch (err) {
-        console.error("Error al cerrar sesión:", err);
-      } finally {
-        window.location.reload();
-      }
+      // 1. Limpieza instantánea del almacenamiento local
+      sessionStorage.removeItem("ecolnk_user_profile");
+      sessionStorage.removeItem("inactivity_timer_enabled");
+      localStorage.clear(); // Opcional: elimina tokens residuales
+
+      // 2. Disparar revocación de Supabase en segundo plano (sin await)
+      supabaseClient.auth.signOut().catch((err) => {
+        console.warn("Advertencia al revocar sesión en servidor:", err);
+      });
+
+      // 3. Redirección/Recarga instantánea para el usuario
+      cargarRaiz("login");
     },
   };
 };
