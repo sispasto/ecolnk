@@ -173,6 +173,16 @@
     border-left: none;
     color: #64748b;
   }
+
+  /* Desplazamiento leve hacia arriba del centro exacto */
+  .offset-above-center {
+    margin-top: -1.75rem;
+  }
+  @media (min-width: 768px) {
+    .offset-above-center {
+      margin-top: 0;
+    }
+  }
 </style>
 
 <div x-data="loginComponent()" class="login-wrapper">
@@ -220,11 +230,11 @@
       </p>
     </div>
 
-    <!-- CUERPO PRINCIPAL (FORMULARIO) -->
-    <div class="row g-0 flex-grow-1 align-items-start align-items-md-center">
+    <!-- CUERPO PRINCIPAL (FORMULARIO CENTRADO) -->
+    <div class="row g-0 flex-grow-1 align-items-center">
       <!-- COLUMNA FORMULARIO -->
       <div
-        class="col-12 col-md-7 px-3 px-sm-5 pt-3 pt-sm-5 pb-3 d-flex flex-column justify-content-start justify-content-md-center position-relative"
+        class="col-12 col-md-7 px-3 px-sm-5 py-3 d-flex flex-column justify-content-center position-relative offset-above-center"
       >
         <!-- Pluma vectorial de fondo -->
         <svg
@@ -257,7 +267,7 @@
           />
         </svg>
 
-        <div class="position-relative mt-2 mt-md-0" style="z-index: 1">
+        <div class="position-relative" style="z-index: 1">
           <!-- Logo Escritorio -->
           <div class="d-none d-md-flex align-items-center mb-4">
             <img
