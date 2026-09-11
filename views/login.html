@@ -2,7 +2,7 @@
   :root {
     --bg-body: #f3f4f7;
     --brand-dark: #1f232b;
-    --brand-yellow: #fba808; /* Tono dorado del logo */
+    --brand-yellow: #fba808;
     --brand-yellow-hover: #e08d00;
   }
 
@@ -16,10 +16,13 @@
       sans-serif;
     font-size: 0.875rem;
     overflow-x: hidden;
+    margin: 0;
   }
 
+  /* Layout principal sin scroll en móvil */
   .login-wrapper {
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     align-items: stretch;
     justify-content: center;
@@ -30,13 +33,14 @@
     border: none;
     border-radius: 0;
     width: 100%;
-    min-height: 100vh;
+    height: 100vh;
+    height: 100dvh;
     box-shadow: none;
     overflow: hidden;
     position: relative;
     background-color: #fff;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto 1fr auto; /* Header, Formulario, Footer */
   }
 
   @media (min-width: 768px) {
@@ -47,31 +51,30 @@
     .login-card {
       border: 1px solid #d8dbe0;
       border-radius: 1rem;
-      min-height: auto;
+      height: auto;
       max-width: 900px;
       box-shadow: 0 0.75rem 2.5rem rgba(0, 0, 0, 0.08);
       display: block;
     }
   }
 
-  /* Marca de agua flotante en el fondo del formulario */
+  /* Marca de agua flotante ajustada para no distorsionar el alto */
   .mobile-feather-watermark {
     position: absolute;
-    top: 20px;
+    top: 10px;
     right: -25px;
-    width: 250px;
-    height: 300px;
-    opacity: 0.12;
+    width: 220px;
+    height: 260px;
+    opacity: 0.1;
     pointer-events: none;
     z-index: 0;
     transform: rotate(-10deg);
   }
 
-  /* Header móvil compacto con el tamaño ajustado */
   .mobile-brand-header {
     background-color: var(--brand-dark);
     color: #fff;
-    padding: 0.85rem 1rem;
+    padding: 0.65rem 1rem;
     border-bottom: 3px solid var(--brand-yellow);
     display: flex;
     flex-direction: column;
@@ -79,18 +82,16 @@
     justify-content: center;
   }
 
-  /* Footer móvil oscuro */
   .mobile-brand-footer {
     background-color: var(--brand-dark);
     color: rgba(255, 255, 255, 0.6);
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 1rem;
     border-top: 3px solid var(--brand-yellow);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
   }
 
-  /* Títulos e Identidad */
   .mobile-brand-header .brand-title {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 800;
     letter-spacing: -0.5px;
     line-height: 1;
@@ -160,59 +161,56 @@
 
 <div x-data="loginComponent()" class="login-wrapper">
   <div class="card login-card">
-    <div class="row g-0 h-100 flex-grow-1">
-      <!-- HEADER MÓVIL NEGRO REDUCIDO -->
-      <div
-        class="col-12 d-md-none mobile-brand-header text-center position-relative"
-      >
-        <div class="d-flex align-items-center justify-content-center mb-1">
-          <!-- Pluma SVG Blanca/Dorada -->
-          <svg
-            width="26"
-            height="30"
-            viewBox="0 0 200 240"
+    <!-- HEADER MÓVIL NEGRO COMPACTO -->
+    <div class="d-md-none mobile-brand-header text-center position-relative">
+      <div class="d-flex align-items-center justify-content-center mb-1">
+        <svg
+          width="24"
+          height="28"
+          viewBox="0 0 200 240"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          class="me-2"
+        >
+          <path
+            d="M140 10 C 90 40, 40 100, 30 180 C 50 160, 90 140, 140 10 Z"
+            fill="#ffffff"
+          />
+          <path
+            d="M140 10 C 110 60, 80 120, 20 190 C 60 180, 110 150, 140 10 Z"
+            fill="#ffffff"
+            opacity="0.8"
+          />
+          <path
+            d="M140 10 Q 70 110 15 200"
+            stroke="#fba808"
+            stroke-width="9"
+            stroke-linecap="round"
+          />
+          <path
+            d="M15 200 Q 60 215 110 190"
+            stroke="#fba808"
+            stroke-width="8"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            class="me-2"
-          >
-            <path
-              d="M140 10 C 90 40, 40 100, 30 180 C 50 160, 90 140, 140 10 Z"
-              fill="#ffffff"
-            />
-            <path
-              d="M140 10 C 110 60, 80 120, 20 190 C 60 180, 110 150, 140 10 Z"
-              fill="#ffffff"
-              opacity="0.8"
-            />
-            <path
-              d="M140 10 Q 70 110 15 200"
-              stroke="#fba808"
-              stroke-width="9"
-              stroke-linecap="round"
-            />
-            <path
-              d="M15 200 Q 60 215 110 190"
-              stroke="#fba808"
-              stroke-width="8"
-              fill="none"
-              stroke-linecap="round"
-            />
-          </svg>
-
-          <span class="brand-title text-white"
-            >Eco<span class="text-brand-yellow">Lnk</span></span
-          >
-        </div>
-        <p class="small text-white-50 mb-0" style="font-size: 0.7rem">
-          Menos papel, más impacto
-        </p>
+            stroke-linecap="round"
+          />
+        </svg>
+        <span class="brand-title text-white"
+          >Eco<span class="text-brand-yellow">Lnk</span></span
+        >
       </div>
+      <p class="small text-white-50 mb-0" style="font-size: 0.68rem">
+        Menos papel, más impacto
+      </p>
+    </div>
 
+    <!-- CUERPO PRINCIPAL (FORMULARIO + PANEL ESCRITORIO) -->
+    <div class="row g-0 h-100 overflow-hidden">
       <!-- COLUMNA FORMULARIO -->
       <div
-        class="col-12 col-md-7 p-4 p-sm-5 d-flex flex-column justify-content-center position-relative overflow-hidden flex-grow-1"
+        class="col-12 col-md-7 p-3 p-sm-5 d-flex flex-column justify-content-center position-relative overflow-hidden"
       >
-        <!-- Pluma vectorial de fondo (Móvil) -->
+        <!-- Pluma vectorial de fondo -->
         <svg
           class="mobile-feather-watermark d-md-none"
           viewBox="0 0 200 240"
@@ -258,8 +256,8 @@
             >
           </div>
 
-          <h3 class="fw-bold mb-1 text-dark">Iniciar Sesión</h3>
-          <p class="text-muted mb-4">
+          <h3 class="fw-bold mb-1 text-dark fs-4 fs-md-3">Iniciar Sesión</h3>
+          <p class="text-muted mb-3 mb-md-4 small">
             Ingresa con las credenciales de tu cuenta
           </p>
 
@@ -276,8 +274,8 @@
           </div>
 
           <form @submit.prevent="handleSubmit()">
-            <div class="mb-3">
-              <label class="form-label fw-medium text-secondary"
+            <div class="mb-2 mb-md-3">
+              <label class="form-label fw-medium text-secondary small"
                 >Correo Electrónico</label
               >
               <div class="input-group">
@@ -294,16 +292,17 @@
               </div>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-2 mb-md-3">
               <div
                 class="d-flex justify-content-between align-items-center mb-1"
               >
-                <label class="form-label fw-medium text-secondary mb-0"
+                <label class="form-label fw-medium text-secondary mb-0 small"
                   >Contraseña</label
                 >
                 <a
                   href="#"
                   class="small text-decoration-none text-brand-yellow fw-bold"
+                  style="font-size: 0.78rem"
                   >¿Olvidaste tu contraseña?</a
                 >
               </div>
@@ -328,14 +327,14 @@
               </div>
             </div>
 
-            <div class="form-check mb-4">
+            <div class="form-check mb-3 mb-md-4">
               <input
                 class="form-check-input"
                 type="checkbox"
                 id="rememberMe"
                 x-model="rememberMe"
               />
-              <label class="form-check-label text-muted" for="rememberMe">
+              <label class="form-check-label text-muted small" for="rememberMe">
                 Mantener sesión activa
               </label>
             </div>
@@ -343,7 +342,7 @@
             <div class="d-grid gap-2">
               <button
                 type="submit"
-                class="btn btn-primary-custom py-2.5 rounded-3"
+                class="btn btn-primary-custom py-2 rounded-3"
                 :disabled="loading"
               >
                 <span
@@ -412,11 +411,11 @@
           </p>
         </div>
       </div>
+    </div>
 
-      <!-- FOOTER MÓVIL NEGRO -->
-      <div class="col-12 d-md-none mobile-brand-footer text-center">
-        &copy; 2026 EcoLNK. Todos los derechos reservados.
-      </div>
+    <!-- FOOTER MÓVIL NEGRO COMPACTO -->
+    <div class="d-md-none mobile-brand-footer text-center">
+      &copy; 2026 EcoLNK. Todos los derechos reservados.
     </div>
   </div>
 </div>
