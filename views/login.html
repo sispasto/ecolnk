@@ -35,6 +35,8 @@
     overflow: hidden;
     position: relative;
     background-color: #fff;
+    display: flex;
+    flex-direction: column;
   }
 
   @media (min-width: 768px) {
@@ -48,13 +50,14 @@
       min-height: auto;
       max-width: 900px;
       box-shadow: 0 0.75rem 2.5rem rgba(0, 0, 0, 0.08);
+      display: block;
     }
   }
 
   /* Marca de agua flotante en el fondo del formulario */
   .mobile-feather-watermark {
     position: absolute;
-    top: 40px;
+    top: 20px;
     right: -25px;
     width: 250px;
     height: 300px;
@@ -64,11 +67,11 @@
     transform: rotate(-10deg);
   }
 
-  /* Header móvil compacto (reducido a la mitad) */
+  /* Header móvil compacto con el tamaño ajustado */
   .mobile-brand-header {
     background-color: var(--brand-dark);
     color: #fff;
-    padding: 1.25rem 1rem; /* Padding reducido */
+    padding: 0.85rem 1rem;
     border-bottom: 3px solid var(--brand-yellow);
     display: flex;
     flex-direction: column;
@@ -76,15 +79,23 @@
     justify-content: center;
   }
 
-  /* Título optimizado para el header compacto */
+  /* Footer móvil oscuro */
+  .mobile-brand-footer {
+    background-color: var(--brand-dark);
+    color: rgba(255, 255, 255, 0.6);
+    padding: 0.75rem 1rem;
+    border-top: 3px solid var(--brand-yellow);
+    font-size: 0.75rem;
+  }
+
+  /* Títulos e Identidad */
   .mobile-brand-header .brand-title {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     font-weight: 800;
     letter-spacing: -0.5px;
     line-height: 1;
   }
 
-  /* Título principal escritorio */
   .brand-title {
     font-size: 2.25rem;
     font-weight: 800;
@@ -149,16 +160,16 @@
 
 <div x-data="loginComponent()" class="login-wrapper">
   <div class="card login-card">
-    <div class="row g-0 h-100">
-      <!-- HEADER MÓVIL COMPACTO Y CENTRADO -->
+    <div class="row g-0 h-100 flex-grow-1">
+      <!-- HEADER MÓVIL NEGRO REDUCIDO -->
       <div
         class="col-12 d-md-none mobile-brand-header text-center position-relative"
       >
         <div class="d-flex align-items-center justify-content-center mb-1">
-          <!-- Pluma SVG Blanca/Dorada más pequeña -->
+          <!-- Pluma SVG Blanca/Dorada -->
           <svg
-            width="28"
-            height="32"
+            width="26"
+            height="30"
             viewBox="0 0 200 240"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -192,14 +203,14 @@
             >Eco<span class="text-brand-yellow">Lnk</span></span
           >
         </div>
-        <p class="small text-white-50 mb-0" style="font-size: 0.75rem">
+        <p class="small text-white-50 mb-0" style="font-size: 0.7rem">
           Menos papel, más impacto
         </p>
       </div>
 
       <!-- COLUMNA FORMULARIO -->
       <div
-        class="col-12 col-md-7 p-4 p-sm-5 d-flex flex-column justify-content-between position-relative overflow-hidden"
+        class="col-12 col-md-7 p-4 p-sm-5 d-flex flex-column justify-content-center position-relative overflow-hidden flex-grow-1"
       >
         <!-- Pluma vectorial de fondo (Móvil) -->
         <svg
@@ -348,8 +359,9 @@
           </form>
         </div>
 
+        <!-- Footer solo visible en Escritorio -->
         <div
-          class="text-center mt-4 text-muted small position-relative"
+          class="text-center mt-4 text-muted small position-relative d-none d-md-block"
           style="z-index: 1"
         >
           &copy; 2026 EcoLNK. Todos los derechos reservados.
@@ -399,6 +411,11 @@
             digitales para eliminar el gasto innecesario de papel y tinta.
           </p>
         </div>
+      </div>
+
+      <!-- FOOTER MÓVIL NEGRO -->
+      <div class="col-12 d-md-none mobile-brand-footer text-center">
+        &copy; 2026 EcoLNK. Todos los derechos reservados.
       </div>
     </div>
   </div>
