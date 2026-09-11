@@ -81,13 +81,16 @@
     justify-content: center;
   }
 
-  /* Footer Móvil */
+  /* Footer Móvil (Aumentado casi a la misma altura del header) */
   .mobile-brand-footer {
     background-color: var(--brand-dark);
     color: rgba(255, 255, 255, 0.75);
-    padding: 1.5rem 1rem;
+    padding: 2.25rem 1rem; /* Padding más alto */
     border-top: 4px solid var(--brand-yellow);
-    font-size: 0.82rem;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .mobile-brand-header .brand-title {
@@ -206,9 +209,9 @@
 
     <!-- CUERPO PRINCIPAL (FORMULARIO) -->
     <div class="row g-0 h-100 overflow-hidden">
-      <!-- COLUMNA FORMULARIO: Espaciado medio superior con pt-4 y mt-3 -->
+      <!-- COLUMNA FORMULARIO -->
       <div
-        class="col-12 col-md-7 px-3 px-sm-5 pt-4 pt-sm-5 pb-3 d-flex flex-column justify-content-start justify-content-md-center position-relative overflow-y-auto"
+        class="col-12 col-md-7 px-3 px-sm-5 pt-4 pt-sm-5 pb-2 d-flex flex-column justify-content-start justify-content-md-center position-relative overflow-y-auto"
       >
         <!-- Pluma vectorial de fondo -->
         <svg
@@ -413,7 +416,7 @@
       </div>
     </div>
 
-    <!-- FOOTER MÓVIL -->
+    <!-- FOOTER MÓVIL (ALTO) -->
     <div class="d-md-none mobile-brand-footer text-center">
       &copy; 2026 EcoLNK. Todos los derechos reservados.
     </div>
