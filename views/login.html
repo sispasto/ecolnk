@@ -19,7 +19,6 @@
     margin: 0;
   }
 
-  /* Layout principal sin scroll en móvil */
   .login-wrapper {
     min-height: 100vh;
     min-height: 100dvh;
@@ -58,7 +57,6 @@
     }
   }
 
-  /* Marca de agua flotante ajustada para no distorsionar el alto */
   .mobile-feather-watermark {
     position: absolute;
     top: 10px;
@@ -71,27 +69,29 @@
     transform: rotate(-10deg);
   }
 
+  /* Header Móvil aún más alto */
   .mobile-brand-header {
     background-color: var(--brand-dark);
     color: #fff;
-    padding: 0.65rem 1rem;
-    border-bottom: 3px solid var(--brand-yellow);
+    padding: 2.25rem 1rem; /* Mayor altura de encabezado */
+    border-bottom: 4px solid var(--brand-yellow);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
   }
 
+  /* Footer Móvil aún más alto */
   .mobile-brand-footer {
     background-color: var(--brand-dark);
-    color: rgba(255, 255, 255, 0.6);
-    padding: 0.5rem 1rem;
-    border-top: 3px solid var(--brand-yellow);
-    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.75);
+    padding: 1.5rem 1rem; /* Mayor altura de pie de página */
+    border-top: 4px solid var(--brand-yellow);
+    font-size: 0.82rem;
   }
 
   .mobile-brand-header .brand-title {
-    font-size: 1.4rem;
+    font-size: 1.85rem;
     font-weight: 800;
     letter-spacing: -0.5px;
     line-height: 1;
@@ -161,12 +161,12 @@
 
 <div x-data="loginComponent()" class="login-wrapper">
   <div class="card login-card">
-    <!-- HEADER MÓVIL NEGRO COMPACTO -->
+    <!-- HEADER MÓVIL (MÁS ALTO) -->
     <div class="d-md-none mobile-brand-header text-center position-relative">
-      <div class="d-flex align-items-center justify-content-center mb-1">
+      <div class="d-flex align-items-center justify-content-center mb-1.5">
         <svg
-          width="24"
-          height="28"
+          width="32"
+          height="36"
           viewBox="0 0 200 240"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -199,16 +199,16 @@
           >Eco<span class="text-brand-yellow">Lnk</span></span
         >
       </div>
-      <p class="small text-white-50 mb-0" style="font-size: 0.68rem">
+      <p class="small text-white-50 mb-0" style="font-size: 0.78rem">
         Menos papel, más impacto
       </p>
     </div>
 
-    <!-- CUERPO PRINCIPAL (FORMULARIO + PANEL ESCRITORIO) -->
+    <!-- CUERPO PRINCIPAL (FORMULARIO) -->
     <div class="row g-0 h-100 overflow-hidden">
       <!-- COLUMNA FORMULARIO -->
       <div
-        class="col-12 col-md-7 p-3 p-sm-5 d-flex flex-column justify-content-center position-relative overflow-hidden"
+        class="col-12 col-md-7 p-3 p-sm-5 d-flex flex-column justify-content-center position-relative overflow-y-auto"
       >
         <!-- Pluma vectorial de fondo -->
         <svg
@@ -358,7 +358,7 @@
           </form>
         </div>
 
-        <!-- Footer solo visible en Escritorio -->
+        <!-- Footer Escritorio -->
         <div
           class="text-center mt-4 text-muted small position-relative d-none d-md-block"
           style="z-index: 1"
@@ -413,7 +413,7 @@
       </div>
     </div>
 
-    <!-- FOOTER MÓVIL NEGRO COMPACTO -->
+    <!-- FOOTER MÓVIL (MÁS ALTO) -->
     <div class="d-md-none mobile-brand-footer text-center">
       &copy; 2026 EcoLNK. Todos los derechos reservados.
     </div>
