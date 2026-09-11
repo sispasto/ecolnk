@@ -69,11 +69,11 @@
     transform: rotate(-10deg);
   }
 
-  /* Header Móvil (+25% de altura adicional) */
+  /* Header Móvil */
   .mobile-brand-header {
     background-color: var(--brand-dark);
     color: #fff;
-    padding: 2.8rem 1rem; /* Incrementado a 2.8rem (~25% más alto) */
+    padding: 2.8rem 1rem;
     border-bottom: 4px solid var(--brand-yellow);
     display: flex;
     flex-direction: column;
@@ -91,7 +91,7 @@
   }
 
   .mobile-brand-header .brand-title {
-    font-size: 2.05rem; /* Ajustado al nuevo tamaño del header */
+    font-size: 2.05rem;
     font-weight: 800;
     letter-spacing: -0.5px;
     line-height: 1;
@@ -161,7 +161,7 @@
 
 <div x-data="loginComponent()" class="login-wrapper">
   <div class="card login-card">
-    <!-- HEADER MÓVIL (+25% MÁS ALTO) -->
+    <!-- HEADER MÓVIL -->
     <div class="d-md-none mobile-brand-header text-center position-relative">
       <div class="d-flex align-items-center justify-content-center mb-2">
         <svg
@@ -206,9 +206,9 @@
 
     <!-- CUERPO PRINCIPAL (FORMULARIO) -->
     <div class="row g-0 h-100 overflow-hidden">
-      <!-- COLUMNA FORMULARIO -->
+      <!-- COLUMNA FORMULARIO: Alineado arriba (justify-content-start) y padding superior mínimo (pt-2 pt-sm-5) -->
       <div
-        class="col-12 col-md-7 p-3 p-sm-5 d-flex flex-column justify-content-center position-relative overflow-y-auto"
+        class="col-12 col-md-7 px-3 px-sm-5 pt-2 pt-sm-5 pb-3 d-flex flex-column justify-content-start justify-content-md-center position-relative overflow-y-auto"
       >
         <!-- Pluma vectorial de fondo -->
         <svg
@@ -241,7 +241,7 @@
           />
         </svg>
 
-        <div class="position-relative" style="z-index: 1">
+        <div class="position-relative mt-2 mt-md-0" style="z-index: 1">
           <!-- Logo Escritorio -->
           <div class="d-none d-md-flex align-items-center mb-4">
             <img
