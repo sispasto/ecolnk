@@ -64,17 +64,23 @@
     transform: rotate(-10deg);
   }
 
+  /* Header móvil alineado al centro perfecto */
   .mobile-brand-header {
     background-color: var(--brand-dark);
     color: #fff;
-    padding: 1.25rem 1rem;
+    padding: 2.5rem 1rem; /* Espaciado simétrico arriba y abajo */
     border-bottom: 4px solid var(--brand-yellow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .brand-title {
     font-size: 2.25rem;
     font-weight: 800;
     letter-spacing: -0.5px;
+    line-height: 1;
   }
 
   .btn-primary-custom {
@@ -135,12 +141,12 @@
 <div x-data="loginComponent()" class="login-wrapper">
   <div class="card login-card">
     <div class="row g-0 h-100">
-      <!-- HEADER MÓVIL CON PLUMA BLANCA Y DORADA -->
+      <!-- HEADER MÓVIL CENTRADO VERTICAL Y HORIZONTALMENTE -->
       <div
         class="col-12 d-md-none mobile-brand-header text-center position-relative"
       >
-        <div class="d-flex align-items-center justify-content-center mb-1">
-          <!-- Pluma SVG Blanca/Dorada para fondo oscuro -->
+        <div class="d-flex align-items-center justify-content-center mb-2">
+          <!-- Pluma SVG Blanca/Dorada -->
           <svg
             width="38"
             height="42"
