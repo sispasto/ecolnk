@@ -69,11 +69,11 @@
     transform: rotate(-10deg);
   }
 
-  /* Header Móvil aún más alto */
+  /* Header Móvil (+25% de altura adicional) */
   .mobile-brand-header {
     background-color: var(--brand-dark);
     color: #fff;
-    padding: 2.25rem 1rem; /* Mayor altura de encabezado */
+    padding: 2.8rem 1rem; /* Incrementado a 2.8rem (~25% más alto) */
     border-bottom: 4px solid var(--brand-yellow);
     display: flex;
     flex-direction: column;
@@ -81,17 +81,17 @@
     justify-content: center;
   }
 
-  /* Footer Móvil aún más alto */
+  /* Footer Móvil */
   .mobile-brand-footer {
     background-color: var(--brand-dark);
     color: rgba(255, 255, 255, 0.75);
-    padding: 1.5rem 1rem; /* Mayor altura de pie de página */
+    padding: 1.5rem 1rem;
     border-top: 4px solid var(--brand-yellow);
     font-size: 0.82rem;
   }
 
   .mobile-brand-header .brand-title {
-    font-size: 1.85rem;
+    font-size: 2.05rem; /* Ajustado al nuevo tamaño del header */
     font-weight: 800;
     letter-spacing: -0.5px;
     line-height: 1;
@@ -161,12 +161,12 @@
 
 <div x-data="loginComponent()" class="login-wrapper">
   <div class="card login-card">
-    <!-- HEADER MÓVIL (MÁS ALTO) -->
+    <!-- HEADER MÓVIL (+25% MÁS ALTO) -->
     <div class="d-md-none mobile-brand-header text-center position-relative">
-      <div class="d-flex align-items-center justify-content-center mb-1.5">
+      <div class="d-flex align-items-center justify-content-center mb-2">
         <svg
-          width="32"
-          height="36"
+          width="36"
+          height="40"
           viewBox="0 0 200 240"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -199,7 +199,7 @@
           >Eco<span class="text-brand-yellow">Lnk</span></span
         >
       </div>
-      <p class="small text-white-50 mb-0" style="font-size: 0.78rem">
+      <p class="small text-white-50 mb-0" style="font-size: 0.82rem">
         Menos papel, más impacto
       </p>
     </div>
@@ -413,7 +413,7 @@
       </div>
     </div>
 
-    <!-- FOOTER MÓVIL (MÁS ALTO) -->
+    <!-- FOOTER MÓVIL -->
     <div class="d-md-none mobile-brand-footer text-center">
       &copy; 2026 EcoLNK. Todos los derechos reservados.
     </div>
