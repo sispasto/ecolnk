@@ -64,18 +64,27 @@
     transform: rotate(-10deg);
   }
 
-  /* Header móvil alineado al centro perfecto */
+  /* Header móvil compacto (reducido a la mitad) */
   .mobile-brand-header {
     background-color: var(--brand-dark);
     color: #fff;
-    padding: 2.5rem 1rem; /* Espaciado simétrico arriba y abajo */
-    border-bottom: 4px solid var(--brand-yellow);
+    padding: 1.25rem 1rem; /* Padding reducido */
+    border-bottom: 3px solid var(--brand-yellow);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
   }
 
+  /* Título optimizado para el header compacto */
+  .mobile-brand-header .brand-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+
+  /* Título principal escritorio */
   .brand-title {
     font-size: 2.25rem;
     font-weight: 800;
@@ -141,15 +150,15 @@
 <div x-data="loginComponent()" class="login-wrapper">
   <div class="card login-card">
     <div class="row g-0 h-100">
-      <!-- HEADER MÓVIL CENTRADO VERTICAL Y HORIZONTALMENTE -->
+      <!-- HEADER MÓVIL COMPACTO Y CENTRADO -->
       <div
         class="col-12 d-md-none mobile-brand-header text-center position-relative"
       >
-        <div class="d-flex align-items-center justify-content-center mb-2">
-          <!-- Pluma SVG Blanca/Dorada -->
+        <div class="d-flex align-items-center justify-content-center mb-1">
+          <!-- Pluma SVG Blanca/Dorada más pequeña -->
           <svg
-            width="38"
-            height="42"
+            width="28"
+            height="32"
             viewBox="0 0 200 240"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -183,7 +192,9 @@
             >Eco<span class="text-brand-yellow">Lnk</span></span
           >
         </div>
-        <p class="small text-white-50 mb-0">Menos papel, más impacto</p>
+        <p class="small text-white-50 mb-0" style="font-size: 0.75rem">
+          Menos papel, más impacto
+        </p>
       </div>
 
       <!-- COLUMNA FORMULARIO -->
