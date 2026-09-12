@@ -1,103 +1,101 @@
 <style>
-  /* Contenedor principal */
+  /* Centrado vertical base */
   .container-login100 {
-    min-height: 100vh;
+    min-height: calc(100vh - 110px);
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f8f9fa;
-    padding: 15px;
-    padding-bottom: 15vh; /* Elevación estándar PC */
+    padding: 2rem 1.5rem;
     box-sizing: border-box;
-    overflow: hidden;
   }
 
-  .titulo-bienvenida {
-    font-family: "Poppins", sans-serif;
-    font-size: 1.8rem;
-    font-weight: 300;
-    color: #333;
-    margin-bottom: 10px !important;
-    letter-spacing: 1px;
+  /* Desplazamiento superior */
+  .bloque-bienvenida {
+    margin-top: -200px;
+    width: 100%;
   }
 
+  /* Texto Bienvenid@ estilo cool */
+  .texto-bienvenida-cool {
+    font-family:
+      "Poppins",
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-size: 2.25rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 1.25rem;
+    background: linear-gradient(135deg, #1f2937 0%, #4b5563 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Tarjeta contenedora de la imagen */
   .login100-form-avatar {
     display: block;
     width: 100%;
-    max-width: 400px;
+    max-width: 580px;
     margin: 0 auto;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .login100-form-avatar:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
   }
 
   .login100-form-avatar img {
     width: 100%;
     height: auto;
+    display: block;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    object-fit: cover;
   }
 
+  /* Tag de versión */
   .texto-version {
-    font-family: "Poppins", sans-serif;
-    font-weight: 400;
-    color: #aaa;
-    margin-top: 12px;
-    display: block;
-    font-size: 13px;
+    font-family:
+      "Poppins",
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-weight: 500;
+    color: #6b7280;
+    margin-top: 1.5rem;
+    display: inline-block;
+    font-size: 0.85rem;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    padding: 5px 18px;
+    border-radius: 50px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
   }
 
-  /* --- MÓVIL VERTICAL --- */
-  @media (max-width: 768px) and (orientation: portrait) {
-    .container-login100 {
-      padding-bottom: 30vh;
+  /* Responsive para pantallas móviles */
+  @media (max-width: 768px) {
+    .bloque-bienvenida {
+      margin-top: 0;
     }
-    .login100-form-avatar {
-      max-width: 280px;
+    .texto-bienvenida-cool {
+      font-size: 1.75rem;
     }
-  }
-
-  /* --- MÓVIL HORIZONTAL (LANDSCAPE) - AJUSTADO --- */
-  @media (orientation: landscape) and (max-height: 500px) {
-    .container-login100 {
-      padding-bottom: 0; /* Centramos para aprovechar el alto */
-      align-items: center;
-    }
-
-    /* Aumentamos el tamaño de la imagen en horizontal */
-    .login100-form-avatar {
-      max-width: 220px;
-    }
-
-    .titulo-bienvenida {
-      font-size: 1.4rem; /* Un poco más grande que antes */
-      margin-bottom: 4px !important;
-    }
-
-    .texto-version {
-      margin-top: 4px;
-      font-size: 12px;
-    }
-
-    /* Quitamos el padding del contenedor para ganar espacio */
-    .container {
-      padding: 0;
-    }
-  }
-  .login100-form-avatar img {
-    width: 100%; /* Obliga a la imagen a ajustarse al ancho del div padre */
-    height: auto; /* Mantiene la proporción correcta */
-    display: block;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   }
 </style>
 
 <div class="container-login100">
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-12 col-md-8 col-lg-6 text-center">
-        <!--<div class="mb-0">
-          <h1 class="titulo-bienvenida">Bienvenido</h1>
-        </div>-->
-        <div class="login100-form-avatar shadow-lg rounded-4 overflow-hidden">
+      <div class="col-12 text-center bloque-bienvenida">
+        <!-- Saludo minimalista y cool -->
+        <h1 class="texto-bienvenida-cool">¡Bienvenid@!</h1>
+
+        <!-- Banner / Logo -->
+        <div class="login100-form-avatar overflow-hidden">
           <picture>
             <source
               media="(min-width: 769px)"
@@ -106,7 +104,7 @@
             <img
               id="imgBienvenida"
               src="assets/bienvenida_android.webp"
-              alt="Bienvenida"
+              alt="Bienvenida EcoLNK"
               fetchpriority="high"
               loading="eager"
               width="1024"
@@ -115,8 +113,9 @@
           </picture>
         </div>
 
-        <div class="mt-2">
-          <span id="version-label" class="texto-version"> EcoLNK v2.6 </span>
+        <!-- Versión -->
+        <div>
+          <span id="version-label" class="texto-version">EcoLNK v2.6</span>
         </div>
       </div>
     </div>
